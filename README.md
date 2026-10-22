@@ -19,8 +19,8 @@ The intended repository is `stingingend/stingingend.github.io`. In **Settings â†
 ## Personalize
 
 - Edit text, project links, and technology lists in `index.html`.
-- The name comes from the public GitHub profile. Project descriptions are based on their repositories; Music Timer and CoachZilla are labeled as team projects.
-- The introductory copy is an editable portfolio draft, not a verified professional biography. Replace it as desired.
+- The name comes from the public GitHub profile. The page links to CodeAtlas and the Roblox experience provided by its owner.
+- Copy is deliberately minimal: name, project labels, and resume status.
 - The resume section explicitly says coming soon. Add an actual PDF and a download link when ready; no credentials, education, or work history have been invented.
 - CodeAtlas links to its source until a public live demo is deployed. No localhost link is published.
 - Google Fonts are optional; system serif/sans fonts provide fallbacks.

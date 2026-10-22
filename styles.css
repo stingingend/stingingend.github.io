@@ -816,3 +816,10 @@ section[id] {
     animation: none !important;
   }
 }
+
+.roblox-project {
+  margin-top: 24px;
+}
+.hero h1 {
+  margin-bottom: 0;
+}
