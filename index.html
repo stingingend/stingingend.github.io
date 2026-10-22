@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Talon Brady’s personal portfolio. Explore CodeAtlas, web projects, and the code behind them."
+    />
+    <meta name="theme-color" content="#f7f5ef" />
+    <meta property="og:title" content="Talon Brady — Selected work" />
+    <meta
+      property="og:description"
+      content="Exploring ideas. Building useful software. A collection of projects by Talon Brady."
+    />
+    <title>Talon Brady — Selected work</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header wrap">
+      <a class="wordmark" href="./" aria-label="Talon Brady home"
+        >tb<span>.</span></a
+      >
+      <nav aria-label="Main navigation">
+        <a href="#work">Work</a><a href="#about">About</a
+        ><a href="#resume">Resume</a>
+      </nav>
+      <a
+        class="header-contact"
+        href="https://github.com/stingingend"
+        target="_blank"
+        rel="noreferrer"
+        >GitHub <span aria-hidden="true">↗</span></a
+      >
+    </header>
+    <main id="main">
+      <section class="hero wrap" aria-labelledby="hero-title">
+        <div class="hero-meta">
+          <span><i></i> PERSONAL PORTFOLIO</span
+          ><span>CODE · CURIOSITY · CRAFT</span>
+        </div>
+        <h1 id="hero-title">
+          Talon <em>Brady.</em
+          ><span class="hero-asterisk" aria-hidden="true">✳</span>
+        </h1>
+        <div class="hero-bottom">
+          <p>Exploring ideas.<br />Building useful software.</p>
+          <div>
+            <p>
+              A collection of things I’m building,<br />learning, and figuring
+              out along the way.
+            </p>
+            <a class="text-link" href="#work"
+              >Explore my work <span aria-hidden="true">↘</span></a
+            >
+          </div>
+        </div>
+      </section>
+      <section class="work wrap" id="work" aria-labelledby="work-title">
+        <div class="section-heading">
+          <h2 id="work-title">
+            <span class="section-number">01 /</span> Selected work
+          </h2>
+          <span>A FEW THINGS IN THE MAKING</span>
+        </div>
+        <article class="featured-project">
+          <div
+            class="project-visual"
+            aria-label="Illustration of CodeAtlas’s repository exploration tools"
+          >
+            <div class="window-bar">
+              <div><i></i><i></i><i></i></div>
+              <span>CODEATLAS / REPOSITORY EXPLORER</span><span>↗</span>
+            </div>
+            <div class="atlas-stage">
+              <div class="atlas-sidebar">
+                <strong>CodeAtlas</strong><span>EXPLORER</span>
+                <p>⌄ &nbsp; src / project</p>
+                <p class="selected-file">&nbsp;&nbsp; app.py</p>
+                <p>&nbsp;&nbsp; parser.py</p>
+                <p>&nbsp;&nbsp; models.py</p>
+                <p>&nbsp;&nbsp; search.py</p>
+                <small>Python source<br />Connected by structure.</small>
+              </div>
+              <div class="atlas-map">
+                <div>FOLLOW THE CONNECTIONS <span>STATIC ANALYSIS</span></div>
+                <svg
+                  viewBox="0 0 420 250"
+                  role="img"
+                  aria-label="Illustrative graph linking app.py to parser.py and models.py"
+                >
+                  <defs>
+                    <pattern
+                      id="dots"
+                      width="18"
+                      height="18"
+                      patternUnits="userSpaceOnUse"
+                    >
+                      <circle cx="1" cy="1" r=".8" fill="#33414d" />
+                    </pattern>
+                  </defs>
+                  <rect width="420" height="250" fill="url(#dots)" />
+                  <g fill="none" stroke="#627e8f" stroke-width="1.5">
+                    <path d="M126 125 C185 125 175 65 235 65" />
+                    <path d="M126 125 C185 125 175 190 235 190" />
+                  </g>
+                  <g font-family="monospace" font-size="11">
+                    <rect
+                      x="35"
+                      y="103"
+                      width="105"
+                      height="43"
+                      rx="7"
+                      fill="#ecb87b"
+                    />
+                    <text x="56" y="129" fill="#20242a">app.py</text>
+                    <rect
+                      x="235"
+                      y="44"
+                      width="125"
+                      height="43"
+                      rx="7"
+                      fill="#222e38"
+                      stroke="#4c6171"
+                    />
+                    <text x="253" y="70" fill="#d1dce4">parser.py</text>
+                    <rect
+                      x="235"
+                      y="168"
+                      width="125"
+                      height="43"
+                      rx="7"
+                      fill="#222e38"
+                      stroke="#4c6171"
+                    />
+                    <text x="253" y="194" fill="#d1dce4">models.py</text>
+                  </g>
+                </svg>
+                <div class="map-footer">
+                  Symbols. Dependencies. A little more context.
+                </div>
+              </div>
+            </div>
+            <div class="visual-footer">
+              <span><i></i> SOURCE-BACKED EXPLORATION</span
+              ><span>PRODUCT ILLUSTRATION</span>
+            </div>
+          </div>
+          <div class="featured-copy">
+            <div class="project-index">FEATURED PROJECT <span>01</span></div>
+            <h3>CodeAtlas<span>↗</span></h3>
+            <p>
+              A clearer way to explore a codebase. Connect a public Python
+              repository, follow its dependencies, search definitions, and
+              investigate changes with source-backed insights.
+            </p>
+            <ul class="tags" aria-label="Technologies">
+              <li>Python</li>
+              <li>FastAPI</li>
+              <li>Next.js</li>
+              <li>PostgreSQL</li>
+            </ul>
+            <div class="project-links">
+              <a
+                href="https://github.com/stingingend/git-project"
+                target="_blank"
+                rel="noreferrer"
+                >Explore the code <span aria-hidden="true">↗</span></a
+              ><span class="project-status"><i></i> Live demo coming soon</span>
+            </div>
+          </div>
+        </article>
+        <div class="project-grid">
+          <article class="small-project">
+            <div class="small-project-top">
+              <span>02 / TEAM PROJECT</span><span aria-hidden="true">◷</span>
+            </div>
+            <h3>Music Timer</h3>
+            <p>
+              A web development group project pairing a user-set countdown with
+              a queue of music tracks.
+            </p>
+            <ul class="tags" aria-label="Technologies">
+              <li>HTML</li>
+              <li>Web development</li>
+            </ul>
+            <a
+              class="text-link"
+              href="https://github.com/stingingend/WebDevFinal"
+              target="_blank"
+              rel="noreferrer"
+              >View repository <span aria-hidden="true">↗</span></a
+            >
+          </article>
+          <article class="small-project">
+            <div class="small-project-top">
+              <span>03 / TEAM PROJECT</span><span aria-hidden="true">⌘</span>
+            </div>
+            <h3>CoachZilla</h3>
+            <p>
+              An educational software engineering project, built with a student
+              team. Explore the implementation on GitHub.
+            </p>
+            <ul class="tags" aria-label="Technologies">
+              <li>JavaScript</li>
+              <li>Software engineering</li>
+            </ul>
+            <a
+              class="text-link"
+              href="https://github.com/stingingend/CoachZilla-main"
+              target="_blank"
+              rel="noreferrer"
+              >View repository <span aria-hidden="true">↗</span></a
+            >
+          </article>
+        </div>
+      </section>
+      <section class="about wrap" id="about" aria-labelledby="about-title">
+        <div class="section-label">
+          <span class="section-number">02 /</span>
+          <h2 id="about-title">A little about me</h2>
+        </div>
+        <div class="about-copy">
+          <p class="large-copy">
+            I like taking an idea apart.<br />Then making something
+            <em>with it.</em>
+          </p>
+          <p>
+            This is where I share my personal and team projects—from web
+            experiments to tools for understanding code. Each project is a
+            chance to learn something new and build something useful.
+          </p>
+          <div class="toolbox">
+            <span>IN THE PROJECT TOOLBOX</span>
+            <p>
+              Python <b>·</b> JavaScript <b>·</b> React <b>·</b> SQL
+              <b>·</b> Git
+            </p>
+          </div>
+        </div>
+      </section>
+      <section class="resume wrap" id="resume" aria-labelledby="resume-title">
+        <div class="resume-mark" aria-hidden="true">↳</div>
+        <div>
+          <span class="section-number">03 / RESUME</span>
+          <h2 id="resume-title">The details, on one page.</h2>
+          <p>
+            I’m putting together my resume. In the meantime, my projects and
+            their source code are here to explore.
+          </p>
+        </div>
+        <span class="coming-soon">RESUME COMING SOON</span>
+      </section>
+      <section class="contact wrap" aria-labelledby="contact-title">
+        <div class="section-number">HAVE A LOOK AROUND</div>
+        <h2 id="contact-title">There’s more<br /><em>in the making.</em></h2>
+        <a
+          class="contact-button"
+          href="https://github.com/stingingend"
+          target="_blank"
+          rel="noreferrer"
+          >Find me on GitHub <span aria-hidden="true">↗</span></a
+        >
+      </section>
+    </main>
+    <footer class="site-footer wrap">
+      <a class="wordmark" href="./" aria-label="Back to home"
+        >tb<span>.</span></a
+      ><span
+        >Talon Brady <b>© <span id="year">2026</span></b></span
+      ><a href="#main">Back to top ↑</a>
+    </footer>
+    <script src="script.js"></script>
+  </body>
+</html>
