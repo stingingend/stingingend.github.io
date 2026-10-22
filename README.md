@@ -23,4 +23,6 @@ The intended repository is `stingingend/stingingend.github.io`. In **Settings â†
 - Copy is deliberately minimal: name, project labels, and resume status.
 - The resume section explicitly says coming soon. Add an actual PDF and a download link when ready; no credentials, education, or work history have been invented.
 - CodeAtlas links to its source until a public live demo is deployed. No localhost link is published.
-- Google Fonts are optional; system serif/sans fonts provide fallbacks.
+- System fonts only; no font downloads or runtime dependencies.
+- The CodeAtlas diagram shows selected real imports from `backend/app/main.py`; the file nodes link to GitHub source.
+- The Roblox graphic is an illustration, not a game screenshot.
