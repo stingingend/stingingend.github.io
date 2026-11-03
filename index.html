@@ -5,82 +5,96 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Talon Brady. CodeAtlas and Roblox projects."
+      content="Talon Brady's portfolio. Explore CodeAtlas, CommonTime, CoachZilla, and Roblox projects."
     />
-    <meta name="theme-color" content="#f1f0e9" />
-    <meta property="og:title" content="Talon Brady / Projects" />
-    <meta property="og:description" content="CodeAtlas and Roblox projects." />
-    <title>Talon Brady / Projects</title>
+    <meta name="theme-color" content="#f7f6f2" />
+    <meta property="og:title" content="Talon Brady — Selected work" />
+    <meta
+      property="og:description"
+      content="Projects in software, web development, and interactive experiences."
+    />
+    <title>Talon Brady — Selected work</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="styles.css?v=directory-1" />
+    <link rel="stylesheet" href="styles.css?v=portfolio-2" />
   </head>
   <body>
-    <a class="skip-link" href="#main">Skip to projects</a>
-    <div class="page">
+    <a class="skip-link" href="#main">Skip to content</a>
+    <div class="page" id="top">
       <header class="masthead">
-        <div class="identity">
-          <a href="./" aria-label="Talon Brady home"
-            ><h1>
-              Talon Brady<span class="cursor" aria-hidden="true">_</span>
-            </h1></a
-          ><a
-            class="handle"
-            href="https://github.com/stingingend"
-            target="_blank"
-            rel="noreferrer"
-            >@stingingend ↗</a
-          >
-        </div>
+        <a class="wordmark" href="./" aria-label="Talon Brady home"
+          >tb<span aria-hidden="true">.</span></a
+        >
         <nav aria-label="Main navigation">
-          <a href="#projects">Projects <span>↓</span></a
-          ><a href="#resume">Resume <span>↓</span></a
-          ><a
+          <a href="#projects">Projects</a>
+          <a href="#about">About</a>
+          <a href="#resume">Resume</a>
+          <a
+            class="nav-external"
             href="https://github.com/stingingend"
             target="_blank"
             rel="noreferrer"
-            >GitHub <span>↗</span></a
+            >GitHub <span aria-hidden="true">↗</span></a
           >
         </nav>
       </header>
-      <div class="page-rule" aria-hidden="true">
-        <span></span><span></span><span></span><span></span>
-      </div>
-      <main class="directory" id="main">
-        <aside class="index" aria-label="Project index">
-          <div class="index-sticky">
-            <div class="index-title">PROJECTS <span>[02]</span></div>
-            <a href="#codeatlas"><span>01</span> CodeAtlas</a
-            ><a href="#roblox"><span>02</span> Roblox</a>
-            <div class="index-line" aria-hidden="true"></div>
-            <span class="index-note">source + links</span>
+      <main id="main">
+        <section class="intro" aria-labelledby="intro-title">
+          <div class="eyebrow">
+            <span class="small-line" aria-hidden="true"></span> PERSONAL
+            PORTFOLIO
           </div>
-        </aside>
-        <div class="entries" id="projects">
+          <h1 id="intro-title">Talon Brady<span>.</span></h1>
+          <div class="intro-bottom">
+            <p>Building useful tools.<br />Exploring what’s possible.</p>
+            <div class="intro-note">
+              Software, web development,<br />and interactive experiences.
+            </div>
+            <a
+              class="round-link"
+              href="#projects"
+              aria-label="Explore selected projects"
+              >↓</a
+            >
+          </div>
+        </section>
+
+        <section class="work" id="projects" aria-labelledby="work-title">
+          <div class="section-heading">
+            <h2 id="work-title">Selected work <span>04</span></h2>
+            <p>Ideas, experiments, and things I’ve built.</p>
+          </div>
           <article
-            class="project-entry"
+            class="featured project"
             id="codeatlas"
             aria-labelledby="codeatlas-title"
           >
-            <div class="entry-label">
-              <span>01 / SOFTWARE</span
-              ><span class="entry-status">In development</span>
-            </div>
-            <div class="entry-heading">
-              <h2 id="codeatlas-title">CodeAtlas</h2>
+            <div class="featured-copy">
+              <div class="eyebrow">01 / DEVELOPER TOOLS</div>
+              <h3 id="codeatlas-title">CodeAtlas</h3>
+              <p class="project-lead">Find your way through a codebase.</p>
+              <p>
+                A source browser for public GitHub repositories. Search
+                definitions, explore dependency graphs, and trace connections
+                across Python, JavaScript, TypeScript, C, and C++.
+              </p>
+              <ul class="tags" aria-label="CodeAtlas technologies">
+                <li>Python</li>
+                <li>FastAPI</li>
+                <li>Next.js</li>
+                <li>PostgreSQL</li>
+              </ul>
               <a
-                class="project-action"
-                href="https://github.com/stingingend/git-project"
+                class="text-link"
+                href="https://github.com/stingingend/CodeAtlas"
                 target="_blank"
                 rel="noreferrer"
-                >Source <span aria-hidden="true">↗</span></a
+                >Explore CodeAtlas <span aria-hidden="true">↗</span></a
               >
             </div>
-            <p class="project-description">
-              A tool for exploring Python repositories.
-            </p>
             <figure class="code-map">
               <figcaption>
-                <span>backend/app/</span><span>SELECTED IMPORTS</span>
+                <span>CodeAtlas / source map</span
+                ><span aria-hidden="true">↗</span>
               </figcaption>
               <div class="map-grid">
                 <svg
@@ -137,7 +151,7 @@
                   <circle cx="355" cy="170" r="3.5" fill="#2252d4" />
                   <g class="source-node">
                     <a
-                      href="https://github.com/stingingend/git-project/blob/main/backend/app/main.py"
+                      href="https://github.com/stingingend/CodeAtlas/blob/main/backend/app/main.py"
                       target="_blank"
                       rel="noreferrer"
                       aria-label="Open main.py on GitHub"
@@ -157,7 +171,7 @@
                   </g>
                   <g class="source-node">
                     <a
-                      href="https://github.com/stingingend/git-project/blob/main/backend/app/database.py"
+                      href="https://github.com/stingingend/CodeAtlas/blob/main/backend/app/database.py"
                       target="_blank"
                       rel="noreferrer"
                       aria-label="Open database.py on GitHub"
@@ -176,7 +190,7 @@
                   </g>
                   <g class="source-node">
                     <a
-                      href="https://github.com/stingingend/git-project/blob/main/backend/app/jobs.py"
+                      href="https://github.com/stingingend/CodeAtlas/blob/main/backend/app/jobs.py"
                       target="_blank"
                       rel="noreferrer"
                       aria-label="Open jobs.py on GitHub"
@@ -195,7 +209,7 @@
                   </g>
                   <g class="source-node">
                     <a
-                      href="https://github.com/stingingend/git-project/blob/main/backend/app/parsing.py"
+                      href="https://github.com/stingingend/CodeAtlas/blob/main/backend/app/parsing.py"
                       target="_blank"
                       rel="noreferrer"
                       aria-label="Open parsing.py on GitHub"
@@ -223,46 +237,172 @@
                 </svg>
               </div>
               <div class="figure-bottom">
-                <span><i></i> IMPORT RELATIONSHIP</span
-                ><span>Click a file to open source ↗</span>
+                <span><i aria-hidden="true"></i> SELECTED IMPORTS</span
+                ><span>Open a file to explore the source</span>
               </div>
             </figure>
-            <div class="project-meta">
-              <span>Python / FastAPI / Next.js / PostgreSQL</span
-              ><a
-                href="https://github.com/stingingend/git-project"
-                target="_blank"
-                rel="noreferrer"
-                >git-project ↗</a
-              >
-            </div>
           </article>
+
+          <div class="project-grid">
+            <article
+              class="project project-card"
+              id="commontime"
+              aria-labelledby="commontime-title"
+            >
+              <div
+                class="project-visual calendar-visual"
+                role="img"
+                aria-label="Illustration of overlapping availability on a weekly calendar"
+              >
+                <div class="visual-bar">
+                  <span>CommonTime</span
+                  ><span>AVAILABILITY / ILLUSTRATION</span>
+                </div>
+                <div class="calendar-art" aria-hidden="true">
+                  <div class="calendar-heading">
+                    <span
+                      >Find a time.<br /><strong>Make it happen.</strong></span
+                    ><span class="calendar-symbol">↗</span>
+                  </div>
+                  <div class="calendar-days">
+                    <span>MON</span><span>TUE</span><span>WED</span
+                    ><span>THU</span><span>FRI</span>
+                  </div>
+                  <div class="calendar-cells">
+                    <i></i><i class="slot"></i><i></i><i class="slot"></i><i></i
+                    ><i class="slot"></i><i></i><i class="overlap">✓</i><i></i
+                    ><i class="slot"></i><i></i><i class="slot"></i
+                    ><i class="slot"></i><i></i><i></i>
+                  </div>
+                </div>
+              </div>
+              <div class="card-copy">
+                <div class="eyebrow">02 / SCHEDULING</div>
+                <h3 id="commontime-title">CommonTime</h3>
+                <p>
+                  Collect meeting availability with Google Forms, share
+                  participant links, and review responses to plan events in
+                  Google Calendar.
+                </p>
+                <ul class="tags" aria-label="CommonTime technologies">
+                  <li>JavaScript</li>
+                  <li>Google Forms</li>
+                  <li>Calendar API</li>
+                </ul>
+                <div class="card-links">
+                  <a
+                    class="text-link"
+                    href="https://stingingend.github.io/commontime-scheduler/"
+                    target="_blank"
+                    rel="noreferrer"
+                    >Visit website <span aria-hidden="true">↗</span></a
+                  ><a
+                    class="secondary-link"
+                    href="https://github.com/stingingend/commontime-scheduler"
+                    target="_blank"
+                    rel="noreferrer"
+                    aria-label="CommonTime source on GitHub"
+                    >Source ↗</a
+                  >
+                </div>
+              </div>
+            </article>
+
+            <article
+              class="project project-card"
+              id="coachzilla"
+              aria-labelledby="coachzilla-title"
+            >
+              <div class="project-visual route-visual">
+                <div class="visual-bar">
+                  <span>CoachZilla</span><span>ROUTE / ILLUSTRATION</span>
+                </div>
+                <svg
+                  viewBox="0 0 520 264"
+                  role="img"
+                  aria-labelledby="route-title route-desc"
+                >
+                  <title id="route-title">CoachZilla route illustration</title>
+                  <desc id="route-desc">
+                    A stylized route connects a starting station, a refuel stop,
+                    and a destination.
+                  </desc>
+                  <defs>
+                    <pattern
+                      id="route-grid"
+                      width="28"
+                      height="28"
+                      patternUnits="userSpaceOnUse"
+                    >
+                      <path
+                        d="M28 0H0V28"
+                        fill="none"
+                        stroke="#cbd6c9"
+                        stroke-width=".7"
+                      />
+                    </pattern>
+                  </defs>
+                  <rect width="520" height="264" fill="url(#route-grid)" />
+                  <g stroke="#d3ddd0" stroke-width="13" fill="none">
+                    <path
+                      d="M-15 70L150 264M110 -20L345 264M235 -20L520 195M-10 210L500 -10M100 285L535 80"
+                    />
+                  </g>
+                  <path
+                    d="M91 195H201Q224 195 224 172V119Q224 97 246 97H405"
+                    fill="none"
+                    stroke="#315d45"
+                    stroke-width="5"
+                    stroke-linecap="round"
+                  />
+                  <g fill="#f6f8f1" stroke="#315d45" stroke-width="4">
+                    <circle cx="91" cy="195" r="8" />
+                    <circle cx="224" cy="145" r="7" />
+                    <circle cx="405" cy="97" r="8" />
+                  </g>
+                  <g
+                    font-family="Arial, sans-serif"
+                    font-size="12"
+                    fill="#244333"
+                  >
+                    <text x="70" y="226">Start</text>
+                    <text x="240" y="151">Refuel</text>
+                    <text x="367" y="74">Destination</text>
+                  </g>
+                </svg>
+              </div>
+              <div class="card-copy">
+                <div class="eyebrow">03 / TEAM PROJECT</div>
+                <h3 id="coachzilla-title">CoachZilla</h3>
+                <p>
+                  An educational bus route planning application with station
+                  maps, route previews, and travel summaries that account for
+                  fuel constraints.
+                </p>
+                <ul class="tags" aria-label="CoachZilla technologies">
+                  <li>JavaScript</li>
+                  <li>Leaflet</li>
+                  <li>Firebase</li>
+                </ul>
+                <div class="card-links">
+                  <a
+                    class="text-link"
+                    href="https://github.com/stingingend/CoachZilla-main"
+                    target="_blank"
+                    rel="noreferrer"
+                    >Explore CoachZilla <span aria-hidden="true">↗</span></a
+                  >
+                </div>
+              </div>
+            </article>
+          </div>
+
           <article
-            class="project-entry roblox-entry"
+            class="project roblox-project"
             id="roblox"
             aria-labelledby="roblox-title"
           >
-            <div class="entry-label">
-              <span>02 / ROBLOX</span><span>EXPERIENCE</span>
-            </div>
-            <div class="entry-heading">
-              <h2 id="roblox-title">Untitled<br />Experience</h2>
-              <a
-                class="project-action"
-                href="https://www.roblox.com/games/104982161041127/Untitled-Experience"
-                target="_blank"
-                rel="noreferrer"
-                >Open on Roblox <span aria-hidden="true">↗</span></a
-              >
-            </div>
-            <a
-              class="roblox-cover"
-              href="https://www.roblox.com/games/104982161041127/Untitled-Experience"
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Open Untitled Experience on Roblox"
-            >
-              <span class="cover-coordinate">ROBLOX / 02</span>
+            <div class="roblox-art">
               <svg
                 viewBox="0 0 760 320"
                 role="img"
@@ -316,38 +456,68 @@
                   <path
                     d="M210 119L226 119M218 111V127M528 220H544M536 212V228"
                   />
-                </g>
-              </svg>
-              <span class="cover-id"
-                >PLACE ID<br /><strong>104982161041127</strong></span
-              ><span class="cover-link" aria-hidden="true">↗</span
-              ><span class="cover-caption">BLOCK ILLUSTRATION</span>
-            </a>
-            <div class="project-meta">
-              <span>Roblox</span
-              ><a
+                </g></svg
+              ><span class="art-label">BLOCK ILLUSTRATION</span>
+            </div>
+            <div class="roblox-copy">
+              <div class="eyebrow">04 / INTERACTIVE</div>
+              <h3 id="roblox-title">Untitled Experience</h3>
+              <p>
+                An ongoing exploration in Roblox. Step inside the experience.
+              </p>
+              <ul class="tags" aria-label="Platform">
+                <li>Roblox Studio</li>
+              </ul>
+              <a
+                class="text-link"
                 href="https://www.roblox.com/games/104982161041127/Untitled-Experience"
                 target="_blank"
                 rel="noreferrer"
-                >roblox.com ↗</a
+                >Open on Roblox <span aria-hidden="true">↗</span></a
               >
             </div>
           </article>
-          <section class="resume" id="resume" aria-labelledby="resume-title">
-            <span class="resume-index">03 /</span>
-            <h2 id="resume-title">Resume</h2>
-            <span class="resume-status">Not added yet</span>
-          </section>
-        </div>
+        </section>
+
+        <section class="about" id="about" aria-labelledby="about-title">
+          <div class="about-copy">
+            <div class="eyebrow">BEHIND THE PROJECTS</div>
+            <h2 id="about-title">Curiosity, put to work.</h2>
+            <p>
+              My projects explore how software can make complicated things
+              easier to navigate—from understanding a codebase to finding a time
+              to meet.
+            </p>
+            <a
+              class="text-link"
+              href="https://github.com/stingingend"
+              target="_blank"
+              rel="noreferrer"
+              >More on GitHub <span aria-hidden="true">↗</span></a
+            >
+          </div>
+          <div class="details">
+            <div class="detail-row">
+              <h3>Tools I work with</h3>
+              <p>
+                Python · JavaScript · TypeScript<br />FastAPI · Next.js ·
+                PostgreSQL<br />Google APIs · Firebase · Roblox Studio
+              </p>
+            </div>
+            <div class="detail-row" id="resume">
+              <h3>Resume</h3>
+              <p>
+                A downloadable resume is coming soon.<br />For now, explore my
+                work above.
+              </p>
+            </div>
+          </div>
+        </section>
       </main>
       <footer>
-        <a
-          href="https://github.com/stingingend"
-          target="_blank"
-          rel="noreferrer"
-          >github.com/stingingend ↗</a
-        ><span>© <span id="year">2026</span> Talon Brady</span
-        ><a href="#main">↑ Top</a>
+        <a class="footer-name" href="#top">Talon Brady<span>.</span></a
+        ><span>© <span id="year">2026</span></span
+        ><a href="#top">Back to top ↑</a>
       </footer>
     </div>
     <script src="script.js"></script>
