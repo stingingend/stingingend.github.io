@@ -41,3 +41,7 @@ The intended repository is `stingingend/stingingend.github.io`. In **Settings â†
 - The city layout is in `buildCity()` and the terrain in `seabed()`, both in `game.js`.
 - `atlantis/?cam=x,y,z,yaw,pitch` opens with the camera at that spot, for checking a view.
 - The deploy workflow copies the `atlantis` folder alongside the five site files.
+
+## CodeAtlas demo
+
+The codeatlas folder is a built copy of the read-only CodeAtlas demo: static files with no server. It is generated in the CodeAtlas repository (see docs/demo.md there) with the base path /codeatlas, and copied here. Do not edit it by hand; rebuild and replace the folder to update it.
