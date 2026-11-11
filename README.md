@@ -26,5 +26,8 @@ The intended repository is `stingingend/stingingend.github.io`. In **Settings â†
 - System fonts only; no font downloads or runtime dependencies.
 - CodeAtlas links to its current `stingingend/CodeAtlas` repository. The diagram shows selected real imports from `backend/app/main.py`; the file nodes link to GitHub source.
 - The Roblox graphic is an illustration, not a game screenshot.
-- The CommonTime calendar and CoachZilla route are illustrations, not live project data or screenshots.
+- The CommonTime calendar and CoachZilla route are interactive illustrations with sample data, not live project data or screenshots. Both are labelled "sample data" on the page.
+- The CodeAtlas graph shows six real files from `backend/app` and the real imports between them. Update `FILES` and `IMPORTS` in `script.js` if the source changes.
+- The atlas map is an invented world: each project is an island, and the coordinates are derived from the map positions, not real places. Add or move a place in `PLACES` in `script.js` and add a matching link in the `atlas-places` list in `index.html`.
+- Without JavaScript the map falls back to a plain list of links and the three demos fall back to static illustrations.
 - Layouts adapt to mobile screens; links support visible keyboard focus and smooth scrolling respects reduced motion preferences.

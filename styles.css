@@ -674,6 +674,567 @@ footer {
     font-size: 21px;
   }
 }
+/* ---------- Atlas ---------- */
+.coords {
+  color: var(--blue);
+}
+.atlas {
+  margin-top: 56px;
+  background: #e7edea;
+}
+.atlas-stage {
+  position: relative;
+}
+.atlas-places {
+  list-style: none;
+  margin: 0;
+  padding: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 26px;
+}
+.place {
+  display: inline-flex;
+  flex-direction: column;
+  line-height: 1.3;
+}
+.place b {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+}
+.place span {
+  font: 9px/1.5 var(--mono);
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.atlas-stage.is-live .atlas-places {
+  position: absolute;
+  inset: 0;
+  display: block;
+  padding: 0;
+  pointer-events: none;
+}
+.atlas-stage.is-live .place {
+  position: absolute;
+  transform: translateX(-50%);
+  align-items: center;
+  white-space: nowrap;
+  padding: 2px 6px;
+  pointer-events: auto;
+}
+.place.is-here b {
+  color: var(--blue);
+}
+.atlas-map {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.atlas-grid path {
+  fill: none;
+  stroke: #d2dad5;
+  stroke-width: 0.8;
+}
+.atlas-grid text,
+.atlas-start text,
+.atlas-compass text {
+  font-family: var(--mono);
+  fill: #8b968a;
+}
+.atlas-sea {
+  font-family: var(--mono);
+  font-style: italic;
+  letter-spacing: 6px;
+  fill: #98a49d;
+}
+.atlas-itinerary path {
+  fill: none;
+  stroke: #a3afa6;
+  stroke-width: 1.2;
+  stroke-dasharray: 1 7;
+  stroke-linecap: round;
+}
+.atlas-compass circle {
+  fill: none;
+  stroke: #a3afa6;
+}
+.atlas-compass path {
+  fill: var(--paper);
+  stroke: #7d8a78;
+}
+.atlas-compass .thin {
+  stroke: #a3afa6;
+  stroke-width: 0.7;
+}
+.atlas-compass .north {
+  fill: var(--blue);
+  stroke: var(--blue);
+}
+.atlas-start path {
+  fill: var(--paper);
+  stroke: #7d8a78;
+}
+.island {
+  cursor: pointer;
+}
+.island .shallows {
+  fill: none;
+  stroke: #f3f7f3;
+  stroke-width: 26;
+  stroke-linejoin: round;
+  opacity: 0.55;
+}
+.island .shelf {
+  fill: none;
+  stroke: #f8faf6;
+  stroke-width: 11;
+  stroke-linejoin: round;
+}
+.island .land {
+  stroke: #6f7d6c;
+  stroke-width: 1.2;
+  transition:
+    stroke 0.2s,
+    filter 0.2s;
+}
+.island .contour {
+  fill: none;
+  stroke: #6f7d6c;
+  stroke-opacity: 0.28;
+  stroke-width: 0.9;
+}
+.island .pin {
+  fill: var(--paper);
+  stroke: var(--ink);
+  stroke-width: 1.2;
+}
+.island .pin-number {
+  font-family: var(--mono);
+  fill: var(--ink);
+  pointer-events: none;
+}
+.island .pin-ring {
+  fill: none;
+  stroke: var(--blue);
+  stroke-width: 1.5;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.island.is-hover .land,
+.island.is-here .land {
+  stroke: var(--blue);
+  stroke-width: 1.8;
+}
+.island.is-hover .land {
+  filter: brightness(0.96);
+}
+.island.is-visited .pin {
+  fill: var(--ink);
+}
+.island.is-here .pin {
+  fill: var(--blue);
+  stroke: var(--blue);
+}
+.island.is-visited .pin-number,
+.island.is-here .pin-number {
+  fill: #fff;
+}
+.island.is-here .pin-ring {
+  opacity: 1;
+  animation: atlas-ping 2.4s ease-out infinite;
+}
+@keyframes atlas-ping {
+  0% {
+    transform: scale(0.75);
+    opacity: 0.9;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+.atlas-route {
+  fill: none;
+  stroke: var(--blue);
+  stroke-width: 1.6;
+  stroke-dasharray: 5 6;
+  stroke-linecap: round;
+  opacity: 0.45;
+  pointer-events: none;
+}
+.atlas-route.is-active {
+  opacity: 1;
+}
+.atlas-traveller {
+  fill: var(--blue);
+  stroke: #fff;
+  stroke-width: 2;
+  pointer-events: none;
+}
+.atlas-traveller.is-parked {
+  opacity: 0;
+}
+.locator {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 14px 9px 10px;
+  background: rgba(247, 246, 242, 0.94);
+  border: 1px solid #cfd4c6;
+  border-radius: 8px;
+  box-shadow: 0 6px 24px rgba(36, 41, 34, 0.1);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  font-size: 12px;
+  line-height: 1.3;
+}
+.locator[hidden] {
+  display: none;
+}
+.locator:hover {
+  color: inherit;
+  border-color: var(--blue);
+}
+.locator svg {
+  width: 74px;
+  height: 31px;
+  background: #e7edea;
+  border-radius: 4px;
+}
+.locator path {
+  fill: #bcc7ba;
+}
+.locator path.is-here {
+  fill: var(--blue);
+}
+.locator span {
+  display: flex;
+  flex-direction: column;
+}
+.locator b {
+  font-weight: 600;
+}
+.locator small {
+  font: 9px/1.5 var(--mono);
+  color: var(--muted);
+}
+.locator i {
+  font: normal 9px var(--mono);
+  color: var(--blue);
+  margin-left: 6px;
+}
+section[tabindex="-1"]:focus,
+article[tabindex="-1"]:focus {
+  outline: none;
+}
+button:focus-visible,
+input:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+}
+
+/* ---------- CodeAtlas import graph ---------- */
+.graph-node {
+  font: 16px var(--mono);
+  cursor: grab;
+  outline: none;
+}
+.graph-node.is-dragging {
+  cursor: grabbing;
+}
+.graph-node > rect {
+  fill: #f9faf4;
+  stroke: #9aa795;
+  stroke-width: 1.2;
+  transition:
+    fill 0.15s,
+    stroke 0.15s;
+}
+.graph-node text {
+  fill: var(--ink);
+  -webkit-user-select: none;
+  user-select: none;
+}
+.graph-node .hit {
+  fill: transparent;
+}
+.graph-node .node-arrow {
+  fill: var(--blue);
+}
+.graph-node a:hover .node-arrow {
+  font-weight: 700;
+}
+.graph-node.is-selected > rect {
+  fill: var(--blue);
+  stroke: var(--blue);
+}
+.graph-node.is-selected text {
+  fill: #fff;
+}
+.graph-node.is-selected .node-arrow {
+  fill: #c5d2ff;
+}
+.graph-node.is-import > rect,
+.graph-node.is-importer > rect {
+  stroke: var(--blue);
+  stroke-width: 1.8;
+}
+.graph-node.is-importer > rect {
+  stroke-dasharray: 5 4;
+}
+.graph-node.is-dim {
+  opacity: 0.5;
+}
+.graph-node:focus-visible > rect {
+  stroke: #152c13;
+  stroke-width: 4;
+}
+.graph-node a:focus-visible {
+  outline: none;
+}
+.graph-node a:focus-visible .hit {
+  stroke: #152c13;
+  stroke-width: 3;
+}
+.graph-edges line {
+  stroke: var(--blue);
+  stroke-width: 1.5;
+}
+.graph-edges .edge-quiet {
+  stroke: #b4bdaf;
+  stroke-width: 1;
+}
+.graph-edges .edge-in {
+  stroke-dasharray: 5 4;
+}
+.figure-bottom i.dashed {
+  margin-left: 10px;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--blue) 0 3px,
+    transparent 3px 5px
+  );
+}
+
+/* ---------- CommonTime availability ---------- */
+.calendar-art.is-live {
+  padding: 4px 30px 20px;
+}
+.is-live .calendar-heading {
+  align-items: baseline;
+  font-size: 17px;
+  letter-spacing: -0.4px;
+  margin-bottom: 2px;
+}
+.calendar-clear {
+  font: 9px var(--mono);
+  color: inherit;
+  background: none;
+  border: none;
+  border-bottom: 1px solid currentColor;
+  padding: 0;
+  cursor: pointer;
+}
+.calendar-art .calendar-status {
+  font: 10px/1.5 var(--mono);
+  color: inherit;
+  min-height: 30px;
+  margin-bottom: 8px;
+}
+.calendar-grid {
+  display: grid;
+  grid-template-columns: 34px repeat(5, 1fr);
+  gap: 5px;
+  align-items: center;
+}
+.calendar-grid .day,
+.calendar-grid .time {
+  font: 8px var(--mono);
+  text-align: center;
+  white-space: nowrap;
+}
+.calendar-grid .time {
+  text-align: right;
+  padding-right: 4px;
+}
+.calendar-grid .cell {
+  height: 27px;
+  padding: 0;
+  font: 15px/1 var(--sans);
+  color: #fff;
+  background: #f3f5ff;
+  border: 1px solid #d8dff7;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.calendar-grid .others-1 {
+  background: #dae2fb;
+  border-color: #ccd6f5;
+}
+.calendar-grid .others-2 {
+  background: #b7c6f5;
+  border-color: #a7b8ee;
+}
+.calendar-grid .cell:hover {
+  border-color: var(--blue);
+}
+.calendar-grid .is-mine {
+  box-shadow: inset 0 0 0 2px var(--blue);
+}
+.calendar-grid .is-match {
+  background: var(--blue);
+  border-color: var(--blue);
+  box-shadow: none;
+}
+.calendar-grid .cell:focus-visible {
+  outline: 2px solid #152c13;
+  outline-offset: 1px;
+}
+
+/* ---------- CoachZilla route ---------- */
+.route-visual.is-live {
+  display: flex;
+  flex-direction: column;
+}
+.route-visual.is-live > svg {
+  flex: 1;
+  min-height: 0;
+  height: auto;
+}
+.is-live #route-line {
+  stroke: #a3b9a8;
+}
+.route-done {
+  fill: none;
+  stroke: #315d45;
+  stroke-width: 5;
+  stroke-linecap: round;
+}
+.refuel {
+  transition: opacity 0.2s;
+}
+.no-refuel .refuel {
+  opacity: 0.3;
+}
+.bus rect {
+  fill: #f6f8f1;
+  stroke: #1d3d2c;
+  stroke-width: 2.5;
+}
+.bus-windows {
+  fill: none;
+  stroke: #1d3d2c;
+  stroke-width: 1.5;
+}
+.bus.is-out rect {
+  fill: #f7e3dd;
+  stroke: #b3402e;
+}
+.bus.is-out .bus-windows {
+  stroke: #b3402e;
+}
+.route-panel {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+  padding: 9px 14px;
+  border-top: 1px solid #d1dbc9;
+  background: #eef3e9;
+  font: 10px var(--mono);
+}
+.route-drive {
+  font: 600 10px var(--mono);
+  color: #fff;
+  background: #315d45;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+.route-drive:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.route-toggle {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  cursor: pointer;
+}
+.route-toggle input {
+  margin: 0;
+  accent-color: #315d45;
+}
+.route-gauge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+.route-gauge b {
+  display: block;
+  width: 54px;
+  height: 8px;
+  border: 1px solid #315d45;
+  border-radius: 2px;
+  overflow: hidden;
+}
+.route-gauge i {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #315d45;
+}
+.route-gauge.is-low i {
+  background: #b3402e;
+}
+.route-gauge span:last-child {
+  min-width: 4ch;
+  text-align: right;
+}
+.route-panel .route-status {
+  flex-basis: 100%;
+  font: 10px/1.4 var(--mono);
+  color: inherit;
+}
+@media (max-width: 720px) {
+  .atlas {
+    margin-top: 40px;
+  }
+  .place b {
+    font-size: 12px;
+  }
+  .place span {
+    font-size: 8px;
+  }
+  .project-visual {
+    max-height: none;
+  }
+  .calendar-art.is-live {
+    padding: 4px 22px 22px;
+  }
+  .calendar-grid .cell {
+    height: 31px;
+  }
+  .locator {
+    right: 12px;
+    bottom: 12px;
+    gap: 9px;
+    padding: 7px 10px 7px 8px;
+  }
+  .locator svg {
+    width: 52px;
+    height: 22px;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

@@ -15,7 +15,7 @@
     />
     <title>Talon Brady — Selected work</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="styles.css?v=portfolio-2" />
+    <link rel="stylesheet" href="styles.css?v=atlas-1" />
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -56,6 +56,47 @@
               >↓</a
             >
           </div>
+          <figure class="code-map atlas" id="atlas" aria-labelledby="atlas-title">
+            <figcaption>
+              <span id="atlas-title">Atlas / the world of my work</span
+              ><span>CHOOSE A DESTINATION</span>
+            </figcaption>
+            <div class="atlas-stage">
+              <ol class="atlas-places">
+                <li>
+                  <a class="place" href="#codeatlas" data-place="codeatlas"
+                    ><b>CodeAtlas</b><span>Developer tools</span></a
+                  >
+                </li>
+                <li>
+                  <a class="place" href="#commontime" data-place="commontime"
+                    ><b>CommonTime</b><span>Scheduling</span></a
+                  >
+                </li>
+                <li>
+                  <a class="place" href="#coachzilla" data-place="coachzilla"
+                    ><b>CoachZilla</b><span>Route planning</span></a
+                  >
+                </li>
+                <li>
+                  <a class="place" href="#roblox" data-place="roblox"
+                    ><b>Untitled Experience</b><span>Roblox</span></a
+                  >
+                </li>
+                <li>
+                  <a class="place" href="#about" data-place="about"
+                    ><b>About</b><span>Home port</span></a
+                  >
+                </li>
+              </ol>
+            </div>
+            <div class="figure-bottom">
+              <span><i aria-hidden="true"></i> YOU ARE HERE</span
+              ><span class="atlas-count" aria-live="polite"
+                >Five places to explore</span
+              >
+            </div>
+          </figure>
         </section>
 
         <section class="work" id="projects" aria-labelledby="work-title">
@@ -69,7 +110,10 @@
             aria-labelledby="codeatlas-title"
           >
             <div class="featured-copy">
-              <div class="eyebrow">01 / DEVELOPER TOOLS</div>
+              <div class="eyebrow">
+                01 / DEVELOPER TOOLS
+                <span class="coords" data-coords="codeatlas"></span>
+              </div>
               <h3 id="codeatlas-title">CodeAtlas</h3>
               <p class="project-lead">Find your way through a codebase.</p>
               <p>
@@ -277,7 +321,10 @@
                 </div>
               </div>
               <div class="card-copy">
-                <div class="eyebrow">02 / SCHEDULING</div>
+                <div class="eyebrow">
+                  02 / SCHEDULING
+                  <span class="coords" data-coords="commontime"></span>
+                </div>
                 <h3 id="commontime-title">CommonTime</h3>
                 <p>
                   Collect meeting availability with Google Forms, share
@@ -349,6 +396,7 @@
                     />
                   </g>
                   <path
+                    id="route-line"
                     d="M91 195H201Q224 195 224 172V119Q224 97 246 97H405"
                     fill="none"
                     stroke="#315d45"
@@ -357,7 +405,7 @@
                   />
                   <g fill="#f6f8f1" stroke="#315d45" stroke-width="4">
                     <circle cx="91" cy="195" r="8" />
-                    <circle cx="224" cy="145" r="7" />
+                    <circle class="refuel" cx="224" cy="145" r="7" />
                     <circle cx="405" cy="97" r="8" />
                   </g>
                   <g
@@ -366,13 +414,16 @@
                     fill="#244333"
                   >
                     <text x="70" y="226">Start</text>
-                    <text x="240" y="151">Refuel</text>
+                    <text class="refuel" x="240" y="151">Refuel</text>
                     <text x="367" y="74">Destination</text>
                   </g>
                 </svg>
               </div>
               <div class="card-copy">
-                <div class="eyebrow">03 / TEAM PROJECT</div>
+                <div class="eyebrow">
+                  03 / TEAM PROJECT
+                  <span class="coords" data-coords="coachzilla"></span>
+                </div>
                 <h3 id="coachzilla-title">CoachZilla</h3>
                 <p>
                   An educational bus route planning application with station
@@ -460,7 +511,10 @@
               ><span class="art-label">BLOCK ILLUSTRATION</span>
             </div>
             <div class="roblox-copy">
-              <div class="eyebrow">04 / INTERACTIVE</div>
+              <div class="eyebrow">
+                04 / INTERACTIVE
+                <span class="coords" data-coords="roblox"></span>
+              </div>
               <h3 id="roblox-title">Untitled Experience</h3>
               <p>
                 An ongoing exploration in Roblox. Step inside the experience.
@@ -481,7 +535,10 @@
 
         <section class="about" id="about" aria-labelledby="about-title">
           <div class="about-copy">
-            <div class="eyebrow">BEHIND THE PROJECTS</div>
+            <div class="eyebrow">
+              BEHIND THE PROJECTS
+              <span class="coords" data-coords="about"></span>
+            </div>
             <h2 id="about-title">Curiosity, put to work.</h2>
             <p>
               My projects explore how software can make complicated things
@@ -520,6 +577,6 @@
         ><a href="#top">Back to top ↑</a>
       </footer>
     </div>
-    <script src="script.js"></script>
+    <script src="script.js?v=atlas-1"></script>
   </body>
 </html>
