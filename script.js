@@ -849,6 +849,7 @@ uniform float uGlow;
 uniform float uEnter;
 uniform vec4 uRip[12];
 uniform float uRipS[12];
+uniform vec4 uSplash[4];
 uniform vec2 uSite[5];
 uniform float uHot[5];
 const float PI = 3.14159265;
@@ -897,7 +898,33 @@ float surface(vec2 p) {
       h += r.w * cos(w * 55.0) * exp(-w * w * 220.0) * exp(-age * 1.1) / (1.0 + d * 2.0);
     }
   }
+  // A click: a deep dip, then a broad train of rings that travels far.
+  for (int i = 0; i < 4; i++) {
+    vec4 s = uSplash[i];
+    float age = uTime - s.z;
+    if (age > 0.0 && age < 7.0) {
+      float d = length(p - s.xy) * s.w;
+      float w = d - age * 0.5;
+      h += 1.7 * cos(w * 30.0) * exp(-w * w * 26.0) * smoothstep(0.0, 0.08, age) * exp(-age * 0.55) / (1.0 + d * 1.1);
+      h -= 1.2 * exp(-d * d * 260.0) * exp(-age * 5.0);
+    }
+  }
   return h;
+}
+
+// Web of light that moving water throws on the floor.
+float caustic(vec2 uv) {
+  vec2 p = mod(uv * 6.2831853, 6.2831853) - 250.0;
+  vec2 i = p;
+  float c = 1.0;
+  float t = uTime * 0.5 + 23.0;
+  for (int n = 0; n < 4; n++) {
+    float tt = t * (1.0 - 3.5 / float(n + 1));
+    i = p + vec2(cos(tt - i.x) + sin(tt + i.y), sin(tt - i.y) + cos(tt + i.x));
+    c += 1.0 / length(vec2(p.x / (sin(i.x + tt) / 0.005), p.y / (cos(i.y + tt) / 0.005)));
+  }
+  c = 1.17 - pow(c / 4.0, 1.4);
+  return pow(abs(c), 8.0);
 }
 
 float band(float r, float a, float b, float aa) {
@@ -1075,26 +1102,45 @@ void main() {
   gF1 = gF0 * 2.0;
   gT = fract(lz);
 
-  float h = surface(p);
+  // Sample the surface around this pixel for its slope and curvature.
   float eps = 0.004 / uScale;
-  vec2 g = vec2(surface(p + vec2(eps, 0.0)) - h, surface(p + vec2(0.0, eps)) - h) / 0.004;
+  float h = surface(p);
+  float hx1 = surface(p + vec2(eps, 0.0));
+  float hx0 = surface(p - vec2(eps, 0.0));
+  float hy1 = surface(p + vec2(0.0, eps));
+  float hy0 = surface(p - vec2(0.0, eps));
+  vec2 g = vec2(hx1 - hx0, hy1 - hy0) / 0.008;
+  float lap = (hx1 + hx0 + hy1 + hy0 - 4.0 * h) / 0.000016;
 
-  // Look through the surface: ripples bend the view of the floor.
+  // Look through the surface: waves bend the view of the floor.
   vec2 q = p + g * 0.0009 / uScale;
   vec3 col = city(q, aa);
 
-  // Caustic light, wave relief, and a soft glow under the pointer.
-  vec2 c0 = q * 4.0 * gF0;
-  vec2 c1 = q * 4.0 * gF1;
-  vec2 drift = vec2(uTime * 0.25, -uTime * 0.2);
-  float k0 = pow(1.0 - abs(noise(c0 + drift) - 0.5) * 2.0, 9.0) + pow(1.0 - abs(noise(c0 * 1.7 - drift.yx + 7.0) - 0.5) * 2.0, 9.0);
-  float k1 = pow(1.0 - abs(noise(c1 + drift) - 0.5) * 2.0, 9.0) + pow(1.0 - abs(noise(c1 * 1.7 - drift.yx + 7.0) - 0.5) * 2.0, 9.0);
-  col += vec3(0.9, 1.0, 1.0) * mix(k0, k1, gT) * 0.03;
-  col += clamp(dot(g, vec2(-0.7, 0.7)), -40.0, 40.0) * 0.0022;
+  // The water tints the stone slightly, which gives the light room to show.
+  col *= vec3(0.905, 0.955, 0.985);
+
+  // Caustic web, pushed around by the waves.
+  vec2 bend = g * 0.004;
+  float web = mix(caustic(q * gF0 * 2.2 + bend), caustic(q * gF1 * 2.2 + bend), gT);
+  col += vec3(0.80, 0.95, 1.0) * web * 0.17;
+  // Crests focus light into bright bands, troughs spread it.
+  col += vec3(0.85, 0.95, 1.0) * clamp(-lap * 0.00022, -0.5, 1.4) * 0.11;
+  // Slope shading and sun glints on the wave faces.
+  col += clamp(dot(g, vec2(-0.7, 0.7)), -40.0, 40.0) * 0.0016;
+  vec3 nrm = normalize(vec3(-g * 0.02, 1.0));
+  col += pow(max(dot(nrm, vec3(-0.28, 0.34, 0.90)), 0.0), 140.0) * 0.5;
+  // A flash where a click lands, and a soft glow under the pointer.
+  for (int i = 0; i < 4; i++) {
+    vec4 s = uSplash[i];
+    float age = uTime - s.z;
+    if (age > 0.0 && age < 2.0) {
+      float d = length(p - s.xy) * s.w;
+      col += vec3(0.70, 0.85, 1.0) * exp(-d * d * 30.0) * exp(-age * 4.0) * 0.22;
+    }
+  }
   float dm = length(p - uMouse) * uScale;
   col += vec3(0.55, 0.75, 1.0) * exp(-dm * dm * 14.0) * 0.07 * uGlow;
 
-  col *= vec3(0.975, 0.992, 1.0);
   col = mix(col * vec3(0.86, 0.90, 0.95), col, smoothstep(1.25, 0.25, length(uv)));
   col = mix(col, vec3(0.969, 0.965, 0.949), smoothstep(0.45, 1.0, uEnter));
   gl_FragColor = vec4(col, 1.0);
@@ -1129,6 +1175,8 @@ void main() {
     const RIPPLES = 12;
     const ripples = new Float32Array(RIPPLES * 4).fill(-100);
     const rippleZoom = new Float32Array(RIPPLES).fill(1);
+    const splashes = new Float32Array(4 * 4).fill(-100);
+    let nextSplash = 0;
     const sitePositions = new Float32Array(SITES.flatMap((s) => s.at));
     const hot = new Float32Array(SITES.length);
     const found = new Set();
@@ -1201,7 +1249,7 @@ void main() {
       if (still || !uniforms) return close(id);
       const to = site ? site.at : [0, 0];
       dive = { began: performance.now(), from: { ...cam }, to, id };
-      addRipple(to[0], to[1], 0.9);
+      splash(to[0], to[1]);
     }
     button.addEventListener("click", () => enter(null));
 
@@ -1228,7 +1276,7 @@ void main() {
         gl.enableVertexAttribArray(corner);
         gl.vertexAttribPointer(corner, 2, gl.FLOAT, false, 0, 0);
         uniforms = {};
-        for (const name of ["uRes", "uTime", "uCam", "uScale", "uMouse", "uGlow", "uEnter", "uRip", "uRipS", "uSite", "uHot"])
+        for (const name of ["uRes", "uTime", "uCam", "uScale", "uMouse", "uGlow", "uEnter", "uRip", "uRipS", "uSplash", "uSite", "uHot"])
           uniforms[name] = gl.getUniformLocation(program, name);
         gl.uniform2fv(uniforms.uSite, sitePositions);
       } catch (error) {
@@ -1287,6 +1335,12 @@ void main() {
       ripples.set([x, y, seconds(), strength], nextRipple * 4);
       rippleZoom[nextRipple] = cam.s;
       nextRipple = (nextRipple + 1) % RIPPLES;
+    }
+    // The big one, for clicks.
+    function splash(x, y) {
+      if (still) return;
+      splashes.set([x, y, seconds(), cam.s], nextSplash * 4);
+      nextSplash = (nextSplash + 1) % 4;
     }
     const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
     function explore() {
@@ -1373,6 +1427,8 @@ void main() {
       touches.set(event.pointerId, { x: event.clientX, y: event.clientY, x0: event.clientX, y0: event.clientY });
       if (touches.size === 1) dragged = false;
       pinch = 0;
+      // A mouse press splashes at once; a touch waits to see if it is a tap.
+      if (event.pointerType === "mouse") splash(...toWorld(event.clientX, event.clientY));
     });
     const release = (event) => {
       if (!touches.delete(event.pointerId)) return;
@@ -1381,7 +1437,7 @@ void main() {
       if (touches.size || dragged || dive) return;
       // A plain click: splash, and travel if it landed on something.
       const [x, y] = toWorld(event.clientX, event.clientY);
-      addRipple(x, y, 0.9);
+      if (event.pointerType !== "mouse") splash(x, y);
       const site = siteAt(x, y);
       if (site) {
         if (cam.s >= REVEAL_ZOOM) enter(site);
@@ -1512,6 +1568,7 @@ void main() {
       gl.uniform1f(uniforms.uEnter, fade);
       gl.uniform4fv(uniforms.uRip, ripples);
       gl.uniform1fv(uniforms.uRipS, rippleZoom);
+      gl.uniform4fv(uniforms.uSplash, splashes);
       gl.uniform1fv(uniforms.uHot, hot);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
 
