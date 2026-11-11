@@ -844,10 +844,6 @@ footer {
   border-radius: 50%;
   background: var(--blue);
 }
-.gate.has-cursor,
-.gate.has-cursor .gate-enter {
-  cursor: none;
-}
 .gate.has-cursor.has-moved .gate-cursor {
   opacity: 1;
 }
@@ -888,6 +884,163 @@ footer {
   }
   .gate-hint {
     display: none;
+  }
+}
+
+/* Exploring the entry world */
+.gate-canvas {
+  touch-action: none;
+  cursor: grab;
+}
+.gate.is-dragging .gate-canvas {
+  cursor: grabbing;
+}
+.gate.has-cursor .gate-canvas,
+.gate.has-cursor button {
+  cursor: none;
+}
+.gate-eyebrow,
+.gate-title,
+.gate-lead {
+  transition:
+    opacity 0.5s,
+    visibility 0.5s;
+}
+.gate-copy {
+  pointer-events: none;
+}
+.gate-enter {
+  pointer-events: auto;
+}
+.gate.is-exploring .gate-eyebrow,
+.gate.is-exploring .gate-title,
+.gate.is-exploring .gate-lead {
+  opacity: 0;
+  visibility: hidden;
+}
+.gate-hint {
+  bottom: 74px;
+}
+.gate.has-moved .gate-hint {
+  opacity: 1;
+}
+.gate.is-exploring .gate-hint {
+  opacity: 0;
+}
+.gate-hud {
+  position: absolute;
+  right: 48px;
+  bottom: 28px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font: 10px/1.6 var(--mono);
+  letter-spacing: 1.2px;
+  color: #3f4b57;
+  transition: opacity 0.45s;
+}
+.gate-hud p {
+  margin: 0;
+  white-space: nowrap;
+}
+.gate-readout {
+  font-variant-numeric: tabular-nums;
+}
+.gate-tally {
+  color: var(--blue);
+}
+.gate-tools {
+  display: flex;
+  gap: 6px;
+}
+.gate-tools button {
+  min-width: 32px;
+  height: 32px;
+  padding: 0 10px;
+  font: 600 12px/1 var(--mono);
+  color: var(--ink);
+  background: rgba(247, 246, 242, 0.78);
+  border: 1px solid rgba(36, 41, 34, 0.22);
+  border-radius: 6px;
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+.gate-tools button:hover {
+  color: #fff;
+  background: var(--ink);
+}
+.gate-labels {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.gate-label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 14px;
+  font: 13px/1 var(--sans);
+  color: #fff;
+  background: var(--blue);
+  border: none;
+  border-radius: 999px;
+  box-shadow: 0 8px 26px rgba(34, 82, 212, 0.28);
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition:
+    opacity 0.35s,
+    visibility 0.35s,
+    background 0.2s;
+}
+.gate-label.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+.gate-label b {
+  font-weight: 600;
+  letter-spacing: -0.2px;
+}
+.gate-label span {
+  font: 9px/1 var(--mono);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.8;
+}
+.gate-label:hover {
+  background: var(--ink);
+}
+.gate-label:focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 3px;
+}
+.gate.is-leaving .gate-hud,
+.gate.is-leaving .gate-labels {
+  opacity: 0;
+}
+@media (max-aspect-ratio: 6/5) {
+  .gate-hud {
+    right: 20px;
+    left: 20px;
+    bottom: 16px;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  .gate-readout {
+    display: none;
+  }
+  .gate-copy {
+    bottom: 72px;
   }
 }
 

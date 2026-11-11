@@ -828,8 +828,11 @@
   }
 
   /* ------------------------------------------------------------------ *
-   * Entry screen: a marble Atlantis under clear water. The pointer
-   * sends ripples across the surface; "Dive in" zooms into the core.
+   * Entry screen: a marble Atlantis under clear water, drawn by one
+   * fragment shader. Drag to move, scroll or pinch to zoom, and the
+   * pointer sends ripples across the surface. Five canals lead out of
+   * the city to engraved landmarks; zoom in on one to find a way
+   * straight into that project.
    * ------------------------------------------------------------------ */
   const GATE_SHADER = `
 #ifdef GL_FRAGMENT_PRECISION_HIGH
@@ -839,13 +842,22 @@ precision mediump float;
 #endif
 uniform vec2 uRes;
 uniform float uTime;
-uniform vec2 uCenter;
+uniform vec2 uCam;
 uniform float uScale;
 uniform vec2 uMouse;
 uniform float uGlow;
 uniform float uEnter;
 uniform vec4 uRip[12];
+uniform float uRipS[12];
+uniform vec2 uSite[5];
+uniform float uHot[5];
 const float PI = 3.14159265;
+
+// Detail level: two neighbouring octaves of the zoom, cross-faded, so
+// swell, caustics and fine veins stay the same size on screen.
+float gF0;
+float gF1;
+float gT;
 
 float hash(vec2 p) {
   p = fract(p * vec2(123.34, 456.21));
@@ -868,15 +880,19 @@ float fbm(vec2 p) {
   return s;
 }
 
+float swell(vec2 p) {
+  return noise(p * 4.0 + vec2(uTime * 0.22, uTime * 0.17))
+       + noise(p * 7.0 - vec2(uTime * 0.15, -uTime * 0.2));
+}
+
 // Height of the water surface: slow swell plus one ring per ripple.
 float surface(vec2 p) {
-  float h = 0.6 * (noise(p * 4.0 + vec2(uTime * 0.22, uTime * 0.17))
-                 + noise(p * 7.0 - vec2(uTime * 0.15, -uTime * 0.2)));
+  float h = 0.6 * mix(swell(p * gF0), swell(p * gF1), gT);
   for (int i = 0; i < 12; i++) {
     vec4 r = uRip[i];
     float age = uTime - r.z;
     if (age > 0.0 && age < 5.0) {
-      float d = length(p - r.xy);
+      float d = length(p - r.xy) * uRipS[i];
       float w = d - age * 0.32;
       h += r.w * cos(w * 55.0) * exp(-w * w * 220.0) * exp(-age * 1.1) / (1.0 + d * 2.0);
     }
@@ -887,16 +903,86 @@ float surface(vec2 p) {
 float band(float r, float a, float b, float aa) {
   return smoothstep(a - aa, a + aa, r) - smoothstep(b - aa, b + aa, r);
 }
+float fill(float d, float w, float aa) {
+  return 1.0 - smoothstep(w - aa, w + aa, d);
+}
+float seg(vec2 p, vec2 a, vec2 b) {
+  vec2 pa = p - a, ba = b - a;
+  return length(pa - ba * clamp(dot(pa, ba) / dot(ba, ba), 0.0, 1.0));
+}
 
-// Plato's plan: rings of water around a central island, and one canal out.
-float channels(vec2 q, float aa) {
+// One water-filled emblem per project, in coordinates local to its site.
+float siteMask(int i, vec2 l, float aa) {
+  float m = 0.0;
+  float r = length(l);
+  float a = atan(l.y, l.x);
+  if (i == 0) {
+    // CodeAtlas: a graph of pools joined by channels.
+    vec2 n1 = vec2(-0.17, 0.12), n2 = vec2(0.16, 0.14), n3 = vec2(0.20, -0.08);
+    vec2 n4 = vec2(-0.05, -0.20), n5 = vec2(-0.24, -0.10), o = vec2(0.0);
+    float d = min(min(seg(l, o, n1), seg(l, o, n2)), min(seg(l, o, n3), seg(l, o, n4)));
+    d = min(d, min(seg(l, n1, n5), min(seg(l, n4, n5), seg(l, n2, n3))));
+    m = fill(d, 0.005, aa);
+    float c = min(min(length(l - n1), length(l - n2)),
+                  min(length(l - n3), min(length(l - n4), length(l - n5))));
+    m = max(m, fill(c, 0.028, aa));
+    m = max(m, fill(abs(r - 0.05), 0.012, aa));
+  } else if (i == 1) {
+    // CommonTime: a clock face of twelve pools.
+    float s = PI / 6.0;
+    float a2 = mod(a + s * 0.5, s) - s * 0.5;
+    vec2 pl = r * vec2(cos(a2), sin(a2));
+    m = fill(abs(r - 0.23), 0.010, aa);
+    m = max(m, fill(length(pl - vec2(0.16, 0.0)), 0.020, aa));
+    m = max(m, fill(seg(l, vec2(0.0), vec2(0.0, 0.11)), 0.006, aa));
+    m = max(m, fill(seg(l, vec2(0.0), vec2(0.075, -0.03)), 0.006, aa));
+    m = max(m, fill(r, 0.020, aa));
+  } else if (i == 2) {
+    // CoachZilla: a route with three stations.
+    vec2 A = vec2(-0.24, -0.12), B = vec2(-0.06, -0.12), C = vec2(-0.06, 0.06);
+    vec2 D = vec2(0.10, 0.06), E = vec2(0.10, 0.16), F = vec2(0.25, 0.16);
+    float d = min(min(seg(l, A, B), seg(l, B, C)), min(seg(l, C, D), min(seg(l, D, E), seg(l, E, F))));
+    m = fill(d, 0.009, aa);
+    float st = min(length(l - A), min(length(l - C), length(l - F)));
+    m = max(m, fill(st, 0.040, aa));
+    m *= 1.0 - fill(st, 0.020, aa);
+  } else if (i == 3) {
+    // Untitled Experience: a studded brick seen from above.
+    vec2 b = abs(l) - vec2(0.20, 0.10);
+    float d = length(max(b, 0.0)) + min(max(b.x, b.y), 0.0) - 0.02;
+    m = fill(abs(d), 0.008, aa);
+    vec2 c = vec2(clamp(floor((l.x + 0.2) / 0.1), 0.0, 3.0) * 0.1 - 0.15, l.y > 0.0 ? 0.05 : -0.05);
+    m = max(m, fill(length(l - c), 0.030, aa));
+  } else {
+    // About: a compass rose.
+    float rad = 0.045 + 0.20 * pow(abs(cos(2.0 * a)), 10.0);
+    float rad2 = 0.030 + 0.10 * pow(abs(sin(2.0 * a)), 10.0);
+    m = max(fill(r - rad, 0.0, aa), fill(r - rad2, 0.0, aa));
+    m = max(m, fill(abs(r - 0.25), 0.006, aa));
+    m *= 1.0 - fill(r, 0.018, aa);
+  }
+  return m;
+}
+
+// Everything cut into the stone and filled with water: Plato's rings
+// around the central island, a canal to each landmark, and the emblems.
+float inlay(vec2 q, float aa) {
   float r = length(q);
-  float c = band(r, 0.095, 0.150, aa) + band(r, 0.232, 0.300, aa) + band(r, 0.400, 0.485, aa);
-  vec2 d = vec2(0.5547, -0.8321);
-  float along = dot(q, d);
-  float perp = abs(dot(q, vec2(-d.y, d.x)));
-  float canal = (1.0 - smoothstep(0.017 - aa, 0.017 + aa, perp)) * smoothstep(0.12 - aa, 0.12 + aa, along);
-  return clamp(max(c, canal), 0.0, 1.0);
+  float c = 0.0;
+  if (r < 0.52) {
+    c = band(r, 0.095, 0.150, aa) + band(r, 0.232, 0.300, aa) + band(r, 0.400, 0.485, aa);
+    vec2 d2 = normalize(uSite[2]);
+    c = max(c, fill(seg(q, d2 * 0.12, d2 * 0.49), 0.017, aa));
+  }
+  for (int i = 0; i < 5; i++) {
+    vec2 s = uSite[i];
+    float L = length(s);
+    vec2 d = s / L;
+    c = max(c, fill(seg(q, d * 0.485, d * (L - 0.27)), 0.011, aa));
+    vec2 l = q - s;
+    if (dot(l, l) < 0.1) c = max(c, siteMask(i, l, aa));
+  }
+  return clamp(c, 0.0, 1.0);
 }
 
 vec3 marble(vec2 q) {
@@ -907,7 +993,11 @@ vec3 marble(vec2 q) {
   float vein = (1.0 - smoothstep(0.0, 0.10, v)) * (0.35 + 0.65 * strength);
   float fine = (1.0 - smoothstep(0.0, 0.05, abs(sin((w.x * 2.3 - w.y * 1.1 + n * 7.0) * 2.3)))) * 0.25 * strength;
   vec3 col = mix(vec3(0.972, 0.970, 0.960), vec3(0.915, 0.922, 0.925), smoothstep(0.3, 0.8, n));
-  return mix(col, vec3(0.70, 0.735, 0.76), clamp(vein * 0.6 + fine, 0.0, 1.0));
+  col = mix(col, vec3(0.70, 0.735, 0.76), clamp(vein * 0.6 + fine, 0.0, 1.0));
+  // Hairline veins that keep appearing as you zoom in.
+  float h0 = pow(1.0 - abs(noise(q * 9.0 * gF0 + 3.0) - 0.5) * 2.0, 14.0);
+  float h1 = pow(1.0 - abs(noise(q * 9.0 * gF1 + 3.0) - 0.5) * 2.0, 14.0);
+  return mix(col, vec3(0.70, 0.735, 0.76), mix(h0, h1, gT) * 0.14);
 }
 
 vec3 city(vec2 q, float aa) {
@@ -915,34 +1005,59 @@ vec3 city(vec2 q, float aa) {
   float r = length(q);
   float a = atan(q.y, q.x);
   float hair = aa * 1.5;
+  vec3 blue = vec3(0.133, 0.322, 0.831);
 
-  // Engraved dial: hairlines and slowly turning tick marks.
-  float e = 0.0;
-  e += 1.0 - smoothstep(0.0, hair, abs(r - 0.535));
-  e += 1.0 - smoothstep(0.0, hair, abs(r - 0.565));
-  e += (1.0 - smoothstep(0.0, hair, abs(r - 0.190))) * 0.6;
-  e += (1.0 - smoothstep(0.0, hair, abs(r - 0.350))) * 0.6;
-  float f1 = fract((a + uTime * 0.03) / (2.0 * PI) * 180.0);
-  e += (1.0 - smoothstep(0.08, 0.16, min(f1, 1.0 - f1))) * band(r, 0.535, 0.565, aa);
-  float f2 = fract((a + uTime * 0.03) / (2.0 * PI) * 24.0);
-  e += (1.0 - smoothstep(0.010, 0.022, min(f2, 1.0 - f2))) * band(r, 0.535, 0.590, aa);
-  float f3 = fract((a - uTime * 0.02) / (2.0 * PI) * 72.0);
-  e += step(0.5, f3) * (1.0 - smoothstep(0.0, hair, abs(r - 0.665))) * 0.8;
+  // Engraved chart grid, with finer lines appearing as you zoom in.
+  float open = smoothstep(0.66, 0.74, r);
+  vec2 g1 = abs(fract(q / 0.5 - 0.5) - 0.5) * 0.5;
+  vec2 g2 = abs(fract(q / 0.125 - 0.5) - 0.5) * 0.125;
+  float e = (1.0 - smoothstep(0.0, hair, min(g1.x, g1.y))) * 0.30 * open;
+  e += (1.0 - smoothstep(0.0, hair, min(g2.x, g2.y))) * 0.16 * open * smoothstep(1.4, 3.0, uScale);
+
+  // The city's dial: hairlines and slowly turning tick marks.
+  if (r < 0.72) {
+    e += 1.0 - smoothstep(0.0, hair, abs(r - 0.535));
+    e += 1.0 - smoothstep(0.0, hair, abs(r - 0.565));
+    e += (1.0 - smoothstep(0.0, hair, abs(r - 0.190))) * 0.6;
+    e += (1.0 - smoothstep(0.0, hair, abs(r - 0.350))) * 0.6;
+    float f1 = fract((a + uTime * 0.03) / (2.0 * PI) * 180.0);
+    e += (1.0 - smoothstep(0.08, 0.16, min(f1, 1.0 - f1))) * band(r, 0.535, 0.565, aa);
+    float f2 = fract((a + uTime * 0.03) / (2.0 * PI) * 24.0);
+    e += (1.0 - smoothstep(0.010, 0.022, min(f2, 1.0 - f2))) * band(r, 0.535, 0.590, aa);
+    float f3 = fract((a - uTime * 0.02) / (2.0 * PI) * 72.0);
+    e += step(0.5, f3) * (1.0 - smoothstep(0.0, hair, abs(r - 0.665))) * 0.8;
+  }
+
+  // A smaller dial around each landmark, and a beacon once it is found.
+  vec3 beacon = vec3(0.0);
+  for (int i = 0; i < 5; i++) {
+    vec2 l = q - uSite[i];
+    float dl = length(l);
+    if (dl < 0.5) {
+      float la = atan(l.y, l.x);
+      e += (1.0 - smoothstep(0.0, hair, abs(dl - 0.31))) * 0.8;
+      float t1 = fract((la - uTime * 0.04) / (2.0 * PI) * 60.0);
+      e += (1.0 - smoothstep(0.10, 0.20, min(t1, 1.0 - t1))) * band(dl, 0.31, 0.33, aa) * 0.8;
+      float pulse = fract(uTime * 0.35 + float(i) * 0.2);
+      float ring = (1.0 - smoothstep(0.0, 0.012, abs(dl - pulse * 0.42))) * (1.0 - pulse);
+      beacon += vec3(0.25, 0.45, 1.0) * uHot[i] * (ring * 0.35 + exp(-dl * dl * 26.0) * 0.10);
+    }
+  }
   col = mix(col, vec3(0.52, 0.59, 0.68), clamp(e, 0.0, 1.0) * 0.55);
 
   // Channels cut into the stone, with a shadowed and a lit wall.
-  vec2 light = vec2(-0.006, 0.008);
-  float c = channels(q, aa);
-  float shadow = c * (1.0 - channels(q + light, aa));
-  float lit = c * (1.0 - channels(q - light, aa));
+  vec2 light = vec2(-0.006, 0.008) / max(uScale, 0.6);
+  float c = inlay(q, aa);
+  float shadow = c * (1.0 - inlay(q + light, aa));
+  float lit = c * (1.0 - inlay(q - light, aa));
   vec3 water = mix(vec3(0.36, 0.70, 0.88), vec3(0.16, 0.38, 0.86),
                    smoothstep(0.2, 0.75, fbm(q * 3.0 + uTime * 0.05)));
   col = mix(col, water, c * 0.86);
   col = mix(col, vec3(0.07, 0.20, 0.55), shadow * 0.55);
   col += lit * 0.16;
+  col += beacon;
 
   // The core.
-  vec3 blue = vec3(0.133, 0.322, 0.831);
   col = mix(col, blue, (1.0 - smoothstep(0.0, hair, abs(r - 0.045))) * 0.8);
   col = mix(col, blue, 1.0 - smoothstep(0.012 - aa, 0.012 + aa, r));
   col += vec3(0.25, 0.45, 1.0) * exp(-r * r * 700.0) * (0.22 + 0.10 * sin(uTime * 1.6));
@@ -952,32 +1067,36 @@ vec3 city(vec2 q, float aa) {
 void main() {
   float m = min(uRes.x, uRes.y);
   vec2 uv = (gl_FragCoord.xy - 0.5 * uRes) / m;
-  float e = uEnter * uEnter * (3.0 - 2.0 * uEnter);
-  float zoom = 1.0 - 0.96 * e;
-  vec2 p = (uv - uCenter * (1.0 - e)) / uScale * zoom;
-  float aa = 1.5 / m / uScale * zoom;
+  vec2 p = uv / uScale + uCam;
+  float aa = 1.5 / m / uScale;
+
+  float lz = log2(uScale);
+  gF0 = exp2(floor(lz));
+  gF1 = gF0 * 2.0;
+  gT = fract(lz);
 
   float h = surface(p);
-  float eps = 0.004;
-  vec2 g = vec2(surface(p + vec2(eps, 0.0)) - h, surface(p + vec2(0.0, eps)) - h) / eps;
+  float eps = 0.004 / uScale;
+  vec2 g = vec2(surface(p + vec2(eps, 0.0)) - h, surface(p + vec2(0.0, eps)) - h) / 0.004;
 
   // Look through the surface: ripples bend the view of the floor.
-  vec2 q = p + g * 0.0009 * zoom - uMouse * 0.012 * uGlow;
+  vec2 q = p + g * 0.0009 / uScale;
   vec3 col = city(q, aa);
 
   // Caustic light, wave relief, and a soft glow under the pointer.
-  vec2 cw = q * 4.0;
-  float n1 = noise(cw + vec2(uTime * 0.25, -uTime * 0.2));
-  float n2 = noise(cw * 1.7 - vec2(uTime * 0.2, uTime * 0.3) + 7.0);
-  float caustic = pow(1.0 - abs(n1 - 0.5) * 2.0, 9.0) + pow(1.0 - abs(n2 - 0.5) * 2.0, 9.0);
-  col += vec3(0.9, 1.0, 1.0) * caustic * 0.03;
+  vec2 c0 = q * 4.0 * gF0;
+  vec2 c1 = q * 4.0 * gF1;
+  vec2 drift = vec2(uTime * 0.25, -uTime * 0.2);
+  float k0 = pow(1.0 - abs(noise(c0 + drift) - 0.5) * 2.0, 9.0) + pow(1.0 - abs(noise(c0 * 1.7 - drift.yx + 7.0) - 0.5) * 2.0, 9.0);
+  float k1 = pow(1.0 - abs(noise(c1 + drift) - 0.5) * 2.0, 9.0) + pow(1.0 - abs(noise(c1 * 1.7 - drift.yx + 7.0) - 0.5) * 2.0, 9.0);
+  col += vec3(0.9, 1.0, 1.0) * mix(k0, k1, gT) * 0.03;
   col += clamp(dot(g, vec2(-0.7, 0.7)), -40.0, 40.0) * 0.0022;
-  float dm = length(p - uMouse);
+  float dm = length(p - uMouse) * uScale;
   col += vec3(0.55, 0.75, 1.0) * exp(-dm * dm * 14.0) * 0.07 * uGlow;
 
   col *= vec3(0.975, 0.992, 1.0);
   col = mix(col * vec3(0.86, 0.90, 0.95), col, smoothstep(1.25, 0.25, length(uv)));
-  col = mix(col, vec3(0.969, 0.965, 0.949), smoothstep(0.5, 1.0, e));
+  col = mix(col, vec3(0.969, 0.965, 0.949), smoothstep(0.45, 1.0, uEnter));
   gl_FragColor = vec4(col, 1.0);
 }`;
 
@@ -986,60 +1105,108 @@ void main() {
     const node = $("#gate");
     if (!node || !root.classList.contains("gate-on")) return;
 
+    // Landmarks, in world units (the city's outer ring has radius 0.485).
+    const SITES = [
+      { id: "codeatlas", name: "CodeAtlas", at: [-1.5, 0.85] },
+      { id: "commontime", name: "CommonTime", at: [0.75, 1.45] },
+      { id: "coachzilla", name: "CoachZilla", at: [1.1, -1.65] },
+      { id: "roblox", name: "Untitled Experience", at: [-1.9, -0.75] },
+      { id: "about", name: "About", at: [-1.25, -1.55] },
+    ];
+    const MIN_ZOOM = 0.3;
+    const MAX_ZOOM = 10;
+    const REVEAL_ZOOM = 1.3; // entrances show themselves from here in
+    const FALL_ZOOM = 8; // zoom this far into an entrance and you go through
+    const BOUND = 3.2;
+
     const page = $(".page");
     const canvas = $(".gate-canvas", node);
     const button = $(".gate-enter", node);
     const cursor = $(".gate-cursor", node);
+    const hint = $(".gate-hint", node);
     const finePointer = matchMedia("(hover: hover) and (pointer: fine)").matches;
+    const still = reduceMotion.matches;
     const RIPPLES = 12;
     const ripples = new Float32Array(RIPPLES * 4).fill(-100);
+    const rippleZoom = new Float32Array(RIPPLES).fill(1);
+    const sitePositions = new Float32Array(SITES.flatMap((s) => s.at));
+    const hot = new Float32Array(SITES.length);
+    const found = new Set();
     let nextRipple = 0;
-    let center = [0, 0];
-    let scale = 0.8;
+    let home = { x: 0, y: 0, s: 1 };
+    const cam = { x: 0, y: 0, s: 1 }; // what is drawn
+    const goal = { x: 0, y: 0, s: 1 }; // what the camera eases toward
+    let glide = 0.2;
     let mouse = [0, 0];
     let glow = 0;
-    const eased = { x: 0, y: 0, glow: 0 }; // smoothed pointer state sent to the shader
-    let entering = 0; // timestamp when the dive began
+    const eased = { x: 0, y: 0, glow: 0 };
+    let dive = null; // { began, from, to, id } while entering
     let frame = 0;
     let closed = false;
+    let uniforms = null;
 
     page.inert = true;
     button.focus({ preventScroll: true });
 
-    function close() {
+    // ---- Heads-up display, built here because it only works with JS ----
+    hint.textContent = finePointer
+      ? "DRAG TO MOVE · SCROLL TO ZOOM"
+      : "DRAG TO MOVE · PINCH TO ZOOM";
+    const hud = html("div", { class: "gate-hud" }, node);
+    const readout = html("p", { class: "gate-readout", "aria-hidden": "true" }, hud);
+    const tally = html("p", { class: "gate-tally", "aria-live": "polite" }, hud);
+    const tools = html("div", { class: "gate-tools" }, hud);
+    const zoomOut = html("button", { type: "button", text: "−", "aria-label": "Zoom out" }, tools);
+    const zoomIn = html("button", { type: "button", text: "+", "aria-label": "Zoom in" }, tools);
+    const reset = html("button", { type: "button", text: "Reset", "aria-label": "Reset the view" }, tools);
+    const labels = html("div", { class: "gate-labels" }, node);
+    for (const site of SITES) {
+      site.label = html("button", { type: "button", class: "gate-label", tabindex: "-1" }, labels);
+      html("b", { text: site.name }, site.label);
+      html("span", { text: "Enter ↵" }, site.label);
+      site.label.addEventListener("click", () => enter(site));
+    }
+
+    // ---- Leaving ----
+    function close(id) {
       if (closed) return;
       closed = true;
       cancelAnimationFrame(frame);
       node.classList.add("is-gone");
       page.inert = false;
+      let focusTarget = $("#intro-title");
+      const section = id && document.getElementById(id);
+      if (section) {
+        root.style.scrollBehavior = "auto";
+        section.scrollIntoView({ block: "start" });
+        root.style.scrollBehavior = "";
+        history.replaceState(null, "", `#${id}`);
+        focusTarget = section;
+      }
+      focusTarget.setAttribute("tabindex", "-1");
+      focusTarget.focus({ preventScroll: true });
       setTimeout(
         () => {
           node.remove();
           root.classList.remove("gate-on");
         },
-        reduceMotion.matches ? 0 : 450,
+        still ? 0 : 450,
       );
-      const title = $("#intro-title");
-      title.setAttribute("tabindex", "-1");
-      title.focus({ preventScroll: true });
     }
-    function enter() {
-      if (entering || closed) return;
+    // Dive through the city core (no site) or straight into a landmark.
+    function enter(site) {
+      if (dive || closed) return;
       node.classList.add("is-leaving");
-      if (reduceMotion.matches || !uniforms) return close();
-      entering = performance.now();
-      addRipple(0, 0, 0.9);
+      const id = site ? site.id : null;
+      if (still || !uniforms) return close(id);
+      const to = site ? site.at : [0, 0];
+      dive = { began: performance.now(), from: { ...cam }, to, id };
+      addRipple(to[0], to[1], 0.9);
     }
+    button.addEventListener("click", () => enter(null));
 
-    button.addEventListener("click", enter);
-    node.addEventListener("keydown", (event) => {
-      if (event.key === "Escape") enter();
-    });
-    node.addEventListener("wheel", (event) => event.deltaY > 0 && enter(), { passive: true });
-
-    // WebGL setup: one full-screen triangle and the fragment shader above.
+    // ---- WebGL: one full-screen triangle and the shader above ----
     const gl = canvas.getContext("webgl", { antialias: false, alpha: false, powerPreference: "high-performance" });
-    let uniforms = null;
     if (gl) {
       const compile = (type, source) => {
         const shader = gl.createShader(type);
@@ -1061,8 +1228,9 @@ void main() {
         gl.enableVertexAttribArray(corner);
         gl.vertexAttribPointer(corner, 2, gl.FLOAT, false, 0, 0);
         uniforms = {};
-        for (const name of ["uRes", "uTime", "uCenter", "uScale", "uMouse", "uGlow", "uEnter", "uRip"])
+        for (const name of ["uRes", "uTime", "uCam", "uScale", "uMouse", "uGlow", "uEnter", "uRip", "uRipS", "uSite", "uHot"])
           uniforms[name] = gl.getUniformLocation(program, name);
+        gl.uniform2fv(uniforms.uSite, sitePositions);
       } catch (error) {
         console.error(error);
         uniforms = null;
@@ -1071,93 +1239,282 @@ void main() {
     if (!uniforms) {
       node.classList.add("no-gl");
       canvas.remove();
+      hud.remove();
+      labels.remove();
+      hint.remove();
       return;
     }
 
     const began = performance.now();
-    const seconds = () => (performance.now() - began) / 1000;
-
-    function resize() {
+    const seconds = () => (still ? 0 : (performance.now() - began) / 1000);
+    const size = () => {
       const w = node.clientWidth;
       const h = node.clientHeight;
+      return { w, h, m: Math.min(w, h) };
+    };
+
+    function resize() {
+      const { w, h } = size();
       const ratio = Math.min(devicePixelRatio || 1, 1.5, Math.sqrt(2.4e6 / (w * h)));
       canvas.width = Math.max(1, Math.round(w * ratio));
       canvas.height = Math.max(1, Math.round(h * ratio));
       gl.viewport(0, 0, canvas.width, canvas.height);
+      // Opening view: the city sits off the right edge on wide screens
+      // and near the top on tall ones, leaving room for the headline.
       const aspect = w / h;
-      if (aspect > 1.2) {
-        center = [aspect / 2 - 0.3, 0]; // sits off the right edge, cropped
-        scale = 0.95;
-      } else {
-        center = [0, Math.max(0.04, 0.5 / aspect - 0.58)];
-        scale = 0.74;
+      const wasHome = goal.x === home.x && goal.y === home.y && goal.s === home.s;
+      home =
+        aspect > 1.2
+          ? { x: -(aspect / 2 - 0.3) / 0.95, y: 0, s: 0.95 }
+          : { x: 0, y: -Math.max(0.04, 0.5 / aspect - 0.58) / 0.74, s: 0.74 };
+      if (wasHome) {
+        Object.assign(goal, home);
+        Object.assign(cam, home);
       }
-      if (reduceMotion.matches) draw();
     }
 
-    // Screen pixels to the city's own coordinates.
-    function toCity(x, y) {
-      const w = node.clientWidth;
-      const h = node.clientHeight;
-      const m = Math.min(w, h);
-      return [((x - w / 2) / m - center[0]) / scale, ((h / 2 - y) / m - center[1]) / scale];
+    // ---- Coordinates ----
+    function toWorld(x, y, view = cam) {
+      const { w, h, m } = size();
+      return [view.x + (x - w / 2) / m / view.s, view.y + (h / 2 - y) / m / view.s];
+    }
+    function toScreen(wx, wy) {
+      const { w, h, m } = size();
+      return [w / 2 + (wx - cam.x) * cam.s * m, h / 2 - (wy - cam.y) * cam.s * m];
     }
     function addRipple(x, y, strength) {
+      if (still) return;
       ripples.set([x, y, seconds(), strength], nextRipple * 4);
+      rippleZoom[nextRipple] = cam.s;
       nextRipple = (nextRipple + 1) % RIPPLES;
     }
+    const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+    function explore() {
+      node.classList.add("is-exploring", "has-moved");
+      glide = 0.2;
+    }
+    function panBy(dx, dy) {
+      goal.x = clamp(goal.x + dx, -BOUND, BOUND);
+      goal.y = clamp(goal.y + dy, -BOUND, BOUND);
+    }
+    // Zoom by `factor`, keeping the world point under (x, y) fixed.
+    function zoomAt(x, y, factor) {
+      const before = toWorld(x, y, goal);
+      goal.s = clamp(goal.s * factor, MIN_ZOOM, MAX_ZOOM);
+      const after = toWorld(x, y, goal);
+      panBy(before[0] - after[0], before[1] - after[1]);
+      explore();
+    }
+    function flyTo(x, y, s) {
+      Object.assign(goal, { x, y, s });
+      explore();
+      glide = 0.07;
+    }
+    function siteAt(wx, wy) {
+      return SITES.find((s) => Math.hypot(wx - s.at[0], wy - s.at[1]) < 0.33);
+    }
 
-    let last = [0, 0, -1];
+    // ---- Pointer: ripples, drag to pan, pinch to zoom, click to travel ----
+    const touches = new Map();
+    let pinch = 0;
+    let dragged = false;
+    let lastRipple = [0, 0, -1];
     let cursorAt = null;
     let cursorTo = null;
+
     node.addEventListener("pointermove", (event) => {
-      const [x, y] = toCity(event.clientX, event.clientY);
+      const [x, y] = toWorld(event.clientX, event.clientY);
       const now = seconds();
       mouse = [x, y];
       glow = 1;
       node.classList.add("has-moved");
-      if (Math.hypot(x - last[0], y - last[1]) > 0.045 || now - last[2] > 0.35) {
-        addRipple(x, y, 0.42);
-        last = [x, y, now];
+      const reach = 0.045 / cam.s;
+      if (Math.hypot(x - lastRipple[0], y - lastRipple[1]) > reach || now - lastRipple[2] > 0.35) {
+        addRipple(x, y, touches.size ? 0.3 : 0.42);
+        lastRipple = [x, y, now];
       }
       if (finePointer) {
         cursorTo = [event.clientX, event.clientY];
         if (!cursorAt) cursorAt = [...cursorTo];
-        cursor.classList.toggle("is-over", !!event.target.closest(".gate-enter"));
+        const overControl = !!event.target.closest("button");
+        const overSite = !overControl && cam.s >= REVEAL_ZOOM && !!siteAt(x, y);
+        cursor.classList.toggle("is-over", overControl || overSite);
+      }
+      const touch = touches.get(event.pointerId);
+      if (!touch) return;
+      const { m } = size();
+      if (touches.size === 1) {
+        const dx = event.clientX - touch.x;
+        const dy = event.clientY - touch.y;
+        if (!dragged && Math.hypot(event.clientX - touch.x0, event.clientY - touch.y0) > 5) {
+          dragged = true;
+          explore();
+          node.classList.add("is-dragging");
+        }
+        if (dragged) {
+          panBy(-dx / m / goal.s, dy / m / goal.s);
+          cam.x = goal.x;
+          cam.y = goal.y;
+        }
+      }
+      touch.x = event.clientX;
+      touch.y = event.clientY;
+      if (touches.size === 2) {
+        const [a, b] = [...touches.values()];
+        const spread = Math.hypot(a.x - b.x, a.y - b.y);
+        if (pinch) zoomAt((a.x + b.x) / 2, (a.y + b.y) / 2, spread / pinch);
+        pinch = spread;
+        dragged = true;
       }
     });
-    node.addEventListener("pointerdown", (event) => {
-      if (event.target.closest(".gate-enter")) return;
-      addRipple(...toCity(event.clientX, event.clientY), 0.9);
+    canvas.addEventListener("pointerdown", (event) => {
+      if (event.button !== 0 || dive) return;
+      canvas.setPointerCapture(event.pointerId);
+      touches.set(event.pointerId, { x: event.clientX, y: event.clientY, x0: event.clientX, y0: event.clientY });
+      if (touches.size === 1) dragged = false;
+      pinch = 0;
     });
+    const release = (event) => {
+      if (!touches.delete(event.pointerId)) return;
+      pinch = 0;
+      node.classList.remove("is-dragging");
+      if (touches.size || dragged || dive) return;
+      // A plain click: splash, and travel if it landed on something.
+      const [x, y] = toWorld(event.clientX, event.clientY);
+      addRipple(x, y, 0.9);
+      const site = siteAt(x, y);
+      if (site) {
+        if (cam.s >= REVEAL_ZOOM) enter(site);
+        else flyTo(site.at[0], site.at[1], 1.45);
+      } else if (Math.hypot(x, y) < 0.09) {
+        if (cam.s >= 3) enter(null);
+        else flyTo(0, 0, 3.6);
+      }
+    };
+    canvas.addEventListener("pointerup", release);
+    canvas.addEventListener("pointercancel", release);
+    canvas.addEventListener("dblclick", (event) => zoomAt(event.clientX, event.clientY, 2));
     node.addEventListener("pointerleave", () => (glow = 0));
-    if (finePointer && !reduceMotion.matches) node.classList.add("has-cursor");
+    node.addEventListener(
+      "wheel",
+      (event) => {
+        event.preventDefault();
+        if (dive) return;
+        const step = event.deltaMode === 1 ? event.deltaY * 30 : event.deltaY;
+        zoomAt(event.clientX, event.clientY, Math.exp(-clamp(step, -240, 240) * 0.0018));
+      },
+      { passive: false },
+    );
+    if (finePointer && !still) node.classList.add("has-cursor");
+
+    // ---- Keyboard and buttons ----
+    const middle = () => {
+      const { w, h } = size();
+      return [w / 2, h / 2];
+    };
+    zoomIn.addEventListener("click", () => zoomAt(...middle(), 1.6));
+    zoomOut.addEventListener("click", () => zoomAt(...middle(), 1 / 1.6));
+    reset.addEventListener("click", () => {
+      Object.assign(goal, home);
+      glide = 0.07;
+      node.classList.remove("is-exploring");
+    });
+    node.addEventListener("keydown", (event) => {
+      if (dive) return;
+      const step = 0.25 / goal.s;
+      const moves = { ArrowLeft: [-step, 0], ArrowRight: [step, 0], ArrowUp: [0, step], ArrowDown: [0, -step] };
+      if (moves[event.key]) {
+        panBy(...moves[event.key]);
+        explore();
+      } else if (event.key === "+" || event.key === "=") zoomAt(...middle(), 1.5);
+      else if (event.key === "-" || event.key === "_") zoomAt(...middle(), 1 / 1.5);
+      else if (event.key === "0") reset.click();
+      else if (event.key === "Escape") enter(null);
+      else return;
+      event.preventDefault();
+    });
+
+    // ---- Per-frame bookkeeping outside the shader ----
+    function degrees(value, positive, negative) {
+      const v = Math.abs(value * 10);
+      const whole = Math.floor(v);
+      const minutes = String(Math.floor((v - whole) * 60)).padStart(2, "0");
+      return `${String(whole).padStart(2, "0")}°${minutes}′${value >= 0 ? positive : negative}`;
+    }
+    let shownReadout = "";
+    let shownTally = "";
+    function updateHud() {
+      const { w, h } = size();
+      const text = `${degrees(mouse[1], "N", "S")} ${degrees(mouse[0], "E", "W")} · ×${cam.s.toFixed(1)}`;
+      if (text !== shownReadout) readout.textContent = shownReadout = text;
+
+      SITES.forEach((site, i) => {
+        const [sx, sy] = toScreen(site.at[0], site.at[1]);
+        const reach = 0.33 * cam.s * size().m;
+        const onScreen = sx > -reach && sx < w + reach && sy > -reach && sy < h + reach;
+        const open = !dive && onScreen && cam.s >= REVEAL_ZOOM;
+        if (open && !found.has(site.id)) found.add(site.id);
+        hot[i] += ((open ? 1 : found.has(site.id) ? 0.35 : 0) - hot[i]) * (still ? 1 : 0.08);
+        site.label.classList.toggle("is-open", open);
+        site.label.tabIndex = open ? 0 : -1;
+        if (open) {
+          const y = Math.min(sy + reach + 10, h - 64);
+          site.label.style.transform = `translate3d(${sx.toFixed(1)}px, ${y.toFixed(1)}px, 0) translateX(-50%)`;
+        }
+        // Keep zooming into an entrance and you fall through it.
+        if (!dive && goal.s >= FALL_ZOOM && Math.hypot(cam.x - site.at[0], cam.y - site.at[1]) < 0.12) enter(site);
+      });
+      if (!dive && goal.s >= FALL_ZOOM && Math.hypot(cam.x, cam.y) < 0.06) enter(null);
+
+      const count =
+        found.size === 0
+          ? "FIVE HIDDEN ENTRANCES"
+          : `${found.size} OF ${SITES.length} ENTRANCES FOUND`;
+      if (count !== shownTally) tally.textContent = shownTally = count;
+    }
 
     function draw() {
       const t = seconds();
-      let dive = 0;
-      if (entering) {
-        dive = Math.min(1, (performance.now() - entering) / 1300);
-        if (dive >= 1) return close();
-      } else if (t - last[2] > 1.6) {
-        // Keep the water alive when nobody is touching it.
-        const a = Math.random() * Math.PI * 2;
-        const r = 0.1 + Math.random() * 0.5;
-        addRipple(Math.cos(a) * r, Math.sin(a) * r, 0.3);
-        last[2] = t - 0.4;
+      let fade = 0;
+      if (dive) {
+        const k = Math.min(1, (performance.now() - dive.began) / 1400);
+        const e = ease(k);
+        const near = Math.min(1, e * 2.2);
+        cam.x = dive.from.x + (dive.to[0] - dive.from.x) * near;
+        cam.y = dive.from.y + (dive.to[1] - dive.from.y) * near;
+        cam.s = dive.from.s * Math.pow(Math.max(40, dive.from.s * 6) / dive.from.s, e);
+        fade = k;
+        if (k >= 1) return close(dive.id);
+      } else {
+        const rate = still ? 1 : glide;
+        cam.x += (goal.x - cam.x) * rate;
+        cam.y += (goal.y - cam.y) * rate;
+        cam.s *= Math.pow(goal.s / cam.s, rate);
+        if (!still && t - lastRipple[2] > 1.6) {
+          // Keep the water alive when nobody is touching it.
+          const { w, h } = size();
+          const [x, y] = toWorld(Math.random() * w, Math.random() * h);
+          addRipple(x, y, 0.3);
+          lastRipple[2] = t - 0.4;
+        }
       }
-      gl.uniform2f(uniforms.uRes, canvas.width, canvas.height);
-      gl.uniform1f(uniforms.uTime, t);
-      gl.uniform2f(uniforms.uCenter, center[0], center[1]);
-      gl.uniform1f(uniforms.uScale, scale);
       eased.x += (mouse[0] - eased.x) * 0.18;
       eased.y += (mouse[1] - eased.y) * 0.18;
       eased.glow += (glow - eased.glow) * 0.06;
+      updateHud();
+
+      gl.uniform2f(uniforms.uRes, canvas.width, canvas.height);
+      gl.uniform1f(uniforms.uTime, t);
+      gl.uniform2f(uniforms.uCam, cam.x, cam.y);
+      gl.uniform1f(uniforms.uScale, cam.s);
       gl.uniform2f(uniforms.uMouse, eased.x, eased.y);
       gl.uniform1f(uniforms.uGlow, eased.glow);
-      gl.uniform1f(uniforms.uEnter, dive);
+      gl.uniform1f(uniforms.uEnter, fade);
       gl.uniform4fv(uniforms.uRip, ripples);
+      gl.uniform1fv(uniforms.uRipS, rippleZoom);
+      gl.uniform1fv(uniforms.uHot, hot);
       gl.drawArrays(gl.TRIANGLES, 0, 3);
+
       if (cursorAt && cursorTo) {
         cursorAt[0] += (cursorTo[0] - cursorAt[0]) * 0.22;
         cursorAt[1] += (cursorTo[1] - cursorAt[1]) * 0.22;
@@ -1172,8 +1529,9 @@ void main() {
 
     addEventListener("resize", () => !closed && resize());
     resize();
-    if (reduceMotion.matches) draw();
-    else loop();
+    Object.assign(goal, home);
+    Object.assign(cam, home);
+    loop();
   }
 
   for (const feature of [gate, atlas, importGraph, availability, busRoute]) {
