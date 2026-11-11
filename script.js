@@ -827,7 +827,356 @@
     }
   }
 
-  for (const feature of [atlas, importGraph, availability, busRoute]) {
+  /* ------------------------------------------------------------------ *
+   * Entry screen: a marble Atlantis under clear water. The pointer
+   * sends ripples across the surface; "Dive in" zooms into the core.
+   * ------------------------------------------------------------------ */
+  const GATE_SHADER = `
+#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
+precision mediump float;
+#endif
+uniform vec2 uRes;
+uniform float uTime;
+uniform vec2 uCenter;
+uniform float uScale;
+uniform vec2 uMouse;
+uniform float uGlow;
+uniform float uEnter;
+uniform vec4 uRip[12];
+const float PI = 3.14159265;
+
+float hash(vec2 p) {
+  p = fract(p * vec2(123.34, 456.21));
+  p += dot(p, p + 45.32);
+  return fract(p.x * p.y);
+}
+float noise(vec2 p) {
+  vec2 i = floor(p), f = fract(p);
+  f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x),
+             mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y);
+}
+float fbm(vec2 p) {
+  float a = 0.5, s = 0.0;
+  for (int i = 0; i < 5; i++) {
+    s += a * noise(p);
+    p = p * 2.03 + vec2(17.3, 9.1);
+    a *= 0.5;
+  }
+  return s;
+}
+
+// Height of the water surface: slow swell plus one ring per ripple.
+float surface(vec2 p) {
+  float h = 0.6 * (noise(p * 4.0 + vec2(uTime * 0.22, uTime * 0.17))
+                 + noise(p * 7.0 - vec2(uTime * 0.15, -uTime * 0.2)));
+  for (int i = 0; i < 12; i++) {
+    vec4 r = uRip[i];
+    float age = uTime - r.z;
+    if (age > 0.0 && age < 5.0) {
+      float d = length(p - r.xy);
+      float w = d - age * 0.32;
+      h += r.w * cos(w * 55.0) * exp(-w * w * 220.0) * exp(-age * 1.1) / (1.0 + d * 2.0);
+    }
+  }
+  return h;
+}
+
+float band(float r, float a, float b, float aa) {
+  return smoothstep(a - aa, a + aa, r) - smoothstep(b - aa, b + aa, r);
+}
+
+// Plato's plan: rings of water around a central island, and one canal out.
+float channels(vec2 q, float aa) {
+  float r = length(q);
+  float c = band(r, 0.095, 0.150, aa) + band(r, 0.232, 0.300, aa) + band(r, 0.400, 0.485, aa);
+  vec2 d = vec2(0.5547, -0.8321);
+  float along = dot(q, d);
+  float perp = abs(dot(q, vec2(-d.y, d.x)));
+  float canal = (1.0 - smoothstep(0.017 - aa, 0.017 + aa, perp)) * smoothstep(0.12 - aa, 0.12 + aa, along);
+  return clamp(max(c, canal), 0.0, 1.0);
+}
+
+vec3 marble(vec2 q) {
+  vec2 w = q * 1.7 + vec2(3.7, 1.3);
+  float n = fbm(w + 1.8 * vec2(fbm(w + vec2(1.7, 9.2)), fbm(w + vec2(8.3, 2.8))));
+  float strength = smoothstep(0.35, 0.75, fbm(w * 0.6 + 11.0));
+  float v = abs(sin((w.x * 0.9 + w.y * 1.6 + n * 4.2) * 1.7));
+  float vein = (1.0 - smoothstep(0.0, 0.10, v)) * (0.35 + 0.65 * strength);
+  float fine = (1.0 - smoothstep(0.0, 0.05, abs(sin((w.x * 2.3 - w.y * 1.1 + n * 7.0) * 2.3)))) * 0.25 * strength;
+  vec3 col = mix(vec3(0.972, 0.970, 0.960), vec3(0.915, 0.922, 0.925), smoothstep(0.3, 0.8, n));
+  return mix(col, vec3(0.70, 0.735, 0.76), clamp(vein * 0.6 + fine, 0.0, 1.0));
+}
+
+vec3 city(vec2 q, float aa) {
+  vec3 col = marble(q);
+  float r = length(q);
+  float a = atan(q.y, q.x);
+  float hair = aa * 1.5;
+
+  // Engraved dial: hairlines and slowly turning tick marks.
+  float e = 0.0;
+  e += 1.0 - smoothstep(0.0, hair, abs(r - 0.535));
+  e += 1.0 - smoothstep(0.0, hair, abs(r - 0.565));
+  e += (1.0 - smoothstep(0.0, hair, abs(r - 0.190))) * 0.6;
+  e += (1.0 - smoothstep(0.0, hair, abs(r - 0.350))) * 0.6;
+  float f1 = fract((a + uTime * 0.03) / (2.0 * PI) * 180.0);
+  e += (1.0 - smoothstep(0.08, 0.16, min(f1, 1.0 - f1))) * band(r, 0.535, 0.565, aa);
+  float f2 = fract((a + uTime * 0.03) / (2.0 * PI) * 24.0);
+  e += (1.0 - smoothstep(0.010, 0.022, min(f2, 1.0 - f2))) * band(r, 0.535, 0.590, aa);
+  float f3 = fract((a - uTime * 0.02) / (2.0 * PI) * 72.0);
+  e += step(0.5, f3) * (1.0 - smoothstep(0.0, hair, abs(r - 0.665))) * 0.8;
+  col = mix(col, vec3(0.52, 0.59, 0.68), clamp(e, 0.0, 1.0) * 0.55);
+
+  // Channels cut into the stone, with a shadowed and a lit wall.
+  vec2 light = vec2(-0.006, 0.008);
+  float c = channels(q, aa);
+  float shadow = c * (1.0 - channels(q + light, aa));
+  float lit = c * (1.0 - channels(q - light, aa));
+  vec3 water = mix(vec3(0.36, 0.70, 0.88), vec3(0.16, 0.38, 0.86),
+                   smoothstep(0.2, 0.75, fbm(q * 3.0 + uTime * 0.05)));
+  col = mix(col, water, c * 0.86);
+  col = mix(col, vec3(0.07, 0.20, 0.55), shadow * 0.55);
+  col += lit * 0.16;
+
+  // The core.
+  vec3 blue = vec3(0.133, 0.322, 0.831);
+  col = mix(col, blue, (1.0 - smoothstep(0.0, hair, abs(r - 0.045))) * 0.8);
+  col = mix(col, blue, 1.0 - smoothstep(0.012 - aa, 0.012 + aa, r));
+  col += vec3(0.25, 0.45, 1.0) * exp(-r * r * 700.0) * (0.22 + 0.10 * sin(uTime * 1.6));
+  return col;
+}
+
+void main() {
+  float m = min(uRes.x, uRes.y);
+  vec2 uv = (gl_FragCoord.xy - 0.5 * uRes) / m;
+  float e = uEnter * uEnter * (3.0 - 2.0 * uEnter);
+  float zoom = 1.0 - 0.96 * e;
+  vec2 p = (uv - uCenter * (1.0 - e)) / uScale * zoom;
+  float aa = 1.5 / m / uScale * zoom;
+
+  float h = surface(p);
+  float eps = 0.004;
+  vec2 g = vec2(surface(p + vec2(eps, 0.0)) - h, surface(p + vec2(0.0, eps)) - h) / eps;
+
+  // Look through the surface: ripples bend the view of the floor.
+  vec2 q = p + g * 0.0009 * zoom - uMouse * 0.012 * uGlow;
+  vec3 col = city(q, aa);
+
+  // Caustic light, wave relief, and a soft glow under the pointer.
+  vec2 cw = q * 4.0;
+  float n1 = noise(cw + vec2(uTime * 0.25, -uTime * 0.2));
+  float n2 = noise(cw * 1.7 - vec2(uTime * 0.2, uTime * 0.3) + 7.0);
+  float caustic = pow(1.0 - abs(n1 - 0.5) * 2.0, 9.0) + pow(1.0 - abs(n2 - 0.5) * 2.0, 9.0);
+  col += vec3(0.9, 1.0, 1.0) * caustic * 0.03;
+  col += clamp(dot(g, vec2(-0.7, 0.7)), -40.0, 40.0) * 0.0022;
+  float dm = length(p - uMouse);
+  col += vec3(0.55, 0.75, 1.0) * exp(-dm * dm * 14.0) * 0.07 * uGlow;
+
+  col *= vec3(0.975, 0.992, 1.0);
+  col = mix(col * vec3(0.86, 0.90, 0.95), col, smoothstep(1.25, 0.25, length(uv)));
+  col = mix(col, vec3(0.969, 0.965, 0.949), smoothstep(0.5, 1.0, e));
+  gl_FragColor = vec4(col, 1.0);
+}`;
+
+  function gate() {
+    const root = document.documentElement;
+    const node = $("#gate");
+    if (!node || !root.classList.contains("gate-on")) return;
+
+    const page = $(".page");
+    const canvas = $(".gate-canvas", node);
+    const button = $(".gate-enter", node);
+    const cursor = $(".gate-cursor", node);
+    const finePointer = matchMedia("(hover: hover) and (pointer: fine)").matches;
+    const RIPPLES = 12;
+    const ripples = new Float32Array(RIPPLES * 4).fill(-100);
+    let nextRipple = 0;
+    let center = [0, 0];
+    let scale = 0.8;
+    let mouse = [0, 0];
+    let glow = 0;
+    const eased = { x: 0, y: 0, glow: 0 }; // smoothed pointer state sent to the shader
+    let entering = 0; // timestamp when the dive began
+    let frame = 0;
+    let closed = false;
+
+    page.inert = true;
+    button.focus({ preventScroll: true });
+
+    function close() {
+      if (closed) return;
+      closed = true;
+      cancelAnimationFrame(frame);
+      node.classList.add("is-gone");
+      page.inert = false;
+      setTimeout(
+        () => {
+          node.remove();
+          root.classList.remove("gate-on");
+        },
+        reduceMotion.matches ? 0 : 450,
+      );
+      const title = $("#intro-title");
+      title.setAttribute("tabindex", "-1");
+      title.focus({ preventScroll: true });
+    }
+    function enter() {
+      if (entering || closed) return;
+      node.classList.add("is-leaving");
+      if (reduceMotion.matches || !uniforms) return close();
+      entering = performance.now();
+      addRipple(0, 0, 0.9);
+    }
+
+    button.addEventListener("click", enter);
+    node.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") enter();
+    });
+    node.addEventListener("wheel", (event) => event.deltaY > 0 && enter(), { passive: true });
+
+    // WebGL setup: one full-screen triangle and the fragment shader above.
+    const gl = canvas.getContext("webgl", { antialias: false, alpha: false, powerPreference: "high-performance" });
+    let uniforms = null;
+    if (gl) {
+      const compile = (type, source) => {
+        const shader = gl.createShader(type);
+        gl.shaderSource(shader, source);
+        gl.compileShader(shader);
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(shader));
+        return shader;
+      };
+      try {
+        const program = gl.createProgram();
+        gl.attachShader(program, compile(gl.VERTEX_SHADER, "attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}"));
+        gl.attachShader(program, compile(gl.FRAGMENT_SHADER, GATE_SHADER));
+        gl.linkProgram(program);
+        if (!gl.getProgramParameter(program, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(program));
+        gl.useProgram(program);
+        gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+        const corner = gl.getAttribLocation(program, "a");
+        gl.enableVertexAttribArray(corner);
+        gl.vertexAttribPointer(corner, 2, gl.FLOAT, false, 0, 0);
+        uniforms = {};
+        for (const name of ["uRes", "uTime", "uCenter", "uScale", "uMouse", "uGlow", "uEnter", "uRip"])
+          uniforms[name] = gl.getUniformLocation(program, name);
+      } catch (error) {
+        console.error(error);
+        uniforms = null;
+      }
+    }
+    if (!uniforms) {
+      node.classList.add("no-gl");
+      canvas.remove();
+      return;
+    }
+
+    const began = performance.now();
+    const seconds = () => (performance.now() - began) / 1000;
+
+    function resize() {
+      const w = node.clientWidth;
+      const h = node.clientHeight;
+      const ratio = Math.min(devicePixelRatio || 1, 1.5, Math.sqrt(2.4e6 / (w * h)));
+      canvas.width = Math.max(1, Math.round(w * ratio));
+      canvas.height = Math.max(1, Math.round(h * ratio));
+      gl.viewport(0, 0, canvas.width, canvas.height);
+      const aspect = w / h;
+      if (aspect > 1.2) {
+        center = [aspect / 2 - 0.3, 0]; // sits off the right edge, cropped
+        scale = 0.95;
+      } else {
+        center = [0, Math.max(0.04, 0.5 / aspect - 0.58)];
+        scale = 0.74;
+      }
+      if (reduceMotion.matches) draw();
+    }
+
+    // Screen pixels to the city's own coordinates.
+    function toCity(x, y) {
+      const w = node.clientWidth;
+      const h = node.clientHeight;
+      const m = Math.min(w, h);
+      return [((x - w / 2) / m - center[0]) / scale, ((h / 2 - y) / m - center[1]) / scale];
+    }
+    function addRipple(x, y, strength) {
+      ripples.set([x, y, seconds(), strength], nextRipple * 4);
+      nextRipple = (nextRipple + 1) % RIPPLES;
+    }
+
+    let last = [0, 0, -1];
+    let cursorAt = null;
+    let cursorTo = null;
+    node.addEventListener("pointermove", (event) => {
+      const [x, y] = toCity(event.clientX, event.clientY);
+      const now = seconds();
+      mouse = [x, y];
+      glow = 1;
+      node.classList.add("has-moved");
+      if (Math.hypot(x - last[0], y - last[1]) > 0.045 || now - last[2] > 0.35) {
+        addRipple(x, y, 0.42);
+        last = [x, y, now];
+      }
+      if (finePointer) {
+        cursorTo = [event.clientX, event.clientY];
+        if (!cursorAt) cursorAt = [...cursorTo];
+        cursor.classList.toggle("is-over", !!event.target.closest(".gate-enter"));
+      }
+    });
+    node.addEventListener("pointerdown", (event) => {
+      if (event.target.closest(".gate-enter")) return;
+      addRipple(...toCity(event.clientX, event.clientY), 0.9);
+    });
+    node.addEventListener("pointerleave", () => (glow = 0));
+    if (finePointer && !reduceMotion.matches) node.classList.add("has-cursor");
+
+    function draw() {
+      const t = seconds();
+      let dive = 0;
+      if (entering) {
+        dive = Math.min(1, (performance.now() - entering) / 1300);
+        if (dive >= 1) return close();
+      } else if (t - last[2] > 1.6) {
+        // Keep the water alive when nobody is touching it.
+        const a = Math.random() * Math.PI * 2;
+        const r = 0.1 + Math.random() * 0.5;
+        addRipple(Math.cos(a) * r, Math.sin(a) * r, 0.3);
+        last[2] = t - 0.4;
+      }
+      gl.uniform2f(uniforms.uRes, canvas.width, canvas.height);
+      gl.uniform1f(uniforms.uTime, t);
+      gl.uniform2f(uniforms.uCenter, center[0], center[1]);
+      gl.uniform1f(uniforms.uScale, scale);
+      eased.x += (mouse[0] - eased.x) * 0.18;
+      eased.y += (mouse[1] - eased.y) * 0.18;
+      eased.glow += (glow - eased.glow) * 0.06;
+      gl.uniform2f(uniforms.uMouse, eased.x, eased.y);
+      gl.uniform1f(uniforms.uGlow, eased.glow);
+      gl.uniform1f(uniforms.uEnter, dive);
+      gl.uniform4fv(uniforms.uRip, ripples);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+      if (cursorAt && cursorTo) {
+        cursorAt[0] += (cursorTo[0] - cursorAt[0]) * 0.22;
+        cursorAt[1] += (cursorTo[1] - cursorAt[1]) * 0.22;
+        cursor.style.transform = `translate3d(${cursorAt[0].toFixed(1)}px, ${cursorAt[1].toFixed(1)}px, 0)`;
+      }
+    }
+    function loop() {
+      if (closed) return;
+      draw();
+      if (!closed) frame = requestAnimationFrame(loop);
+    }
+
+    addEventListener("resize", () => !closed && resize());
+    resize();
+    if (reduceMotion.matches) draw();
+    else loop();
+  }
+
+  for (const feature of [gate, atlas, importGraph, availability, busRoute]) {
     try {
       feature();
     } catch (error) {

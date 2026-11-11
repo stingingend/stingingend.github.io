@@ -15,9 +15,33 @@
     />
     <title>Talon Brady — Selected work</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="styles.css?v=atlas-1" />
+    <link rel="stylesheet" href="styles.css?v=atlantis-1" />
+    <script>
+      // Show the entry screen unless the visitor followed a link to a section.
+      if (!location.hash) document.documentElement.classList.add("gate-on");
+    </script>
   </head>
   <body>
+    <section class="gate" id="gate" aria-label="Welcome">
+      <canvas class="gate-canvas" aria-hidden="true"></canvas>
+      <div class="gate-top" aria-hidden="true">
+        <span class="gate-mark">tb<i>.</i></span>
+        <span>ATLANTIS / PLATE 00</span>
+      </div>
+      <div class="gate-copy">
+        <p class="gate-eyebrow">TALON BRADY / PORTFOLIO</p>
+        <p class="gate-title">Every atlas has a lost city<span>.</span></p>
+        <p class="gate-lead">
+          Tools, experiments, and things I’ve built, charted just below the
+          surface.
+        </p>
+        <button type="button" class="gate-enter">
+          Dive in <span aria-hidden="true">↓</span>
+        </button>
+      </div>
+      <p class="gate-hint" aria-hidden="true">MOVE ACROSS THE WATER</p>
+      <div class="gate-cursor" aria-hidden="true"></div>
+    </section>
     <a class="skip-link" href="#main">Skip to content</a>
     <div class="page" id="top">
       <header class="masthead">
@@ -577,6 +601,6 @@
         ><a href="#top">Back to top ↑</a>
       </footer>
     </div>
-    <script src="script.js?v=atlas-1"></script>
+    <script src="script.js?v=atlantis-1"></script>
   </body>
 </html>

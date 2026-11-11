@@ -674,6 +674,223 @@ footer {
     font-size: 21px;
   }
 }
+/* ---------- Atlantis entry screen ---------- */
+.gate {
+  display: none;
+}
+.gate-on,
+.gate-on body {
+  overflow: hidden;
+}
+.gate-on .gate {
+  display: block;
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  overflow: hidden;
+  background: #f1f2ee;
+  transition: opacity 0.4s;
+}
+.gate.is-gone {
+  opacity: 0;
+  pointer-events: none;
+}
+.gate-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+/* Shown only if WebGL is unavailable. */
+.gate.no-gl {
+  background:
+    radial-gradient(circle at 72% 50%, #2252d4 0 0.6vmin, transparent 0.7vmin),
+    repeating-radial-gradient(
+      circle at 72% 50%,
+      #f4f4f0 0 7vmin,
+      #7fb4e6 7vmin 11vmin
+    );
+}
+.gate-top,
+.gate-hint {
+  position: absolute;
+  left: 48px;
+  right: 48px;
+  margin: 0;
+  font: 10px/1.6 var(--mono);
+  letter-spacing: 1.4px;
+  color: #4d5a66;
+  pointer-events: none;
+}
+.gate-top {
+  top: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.gate-mark {
+  font: 750 31px/1 var(--sans);
+  letter-spacing: -2px;
+  color: var(--ink);
+}
+.gate-mark i {
+  font-style: normal;
+  color: var(--blue);
+}
+.gate-hint {
+  bottom: 30px;
+  text-align: right;
+  transition: opacity 0.6s;
+}
+.gate.has-moved .gate-hint {
+  opacity: 0;
+}
+.gate-copy {
+  position: absolute;
+  left: 48px;
+  bottom: 12vh;
+  width: min(46vw, 620px, calc(100vw - 78vh - 60px));
+}
+.gate-eyebrow {
+  font: 10px/1.6 var(--mono);
+  letter-spacing: 1.4px;
+  color: #4d5a66;
+}
+.gate-title {
+  margin: 18px 0 22px;
+  font-size: clamp(44px, 6.6vw, 96px);
+  font-weight: 650;
+  line-height: 1.02;
+  letter-spacing: -0.058em;
+  color: var(--ink);
+}
+.gate-title span {
+  color: var(--blue);
+}
+.gate-lead {
+  max-width: 400px;
+  font-size: 17px;
+  line-height: 1.5;
+  letter-spacing: -0.2px;
+  color: #3d4640;
+}
+.gate-enter {
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+  margin-top: 30px;
+  padding: 15px 26px;
+  font: 600 14px/1 var(--sans);
+  color: #fff;
+  background: var(--ink);
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    transform 0.2s;
+}
+.gate-enter:hover {
+  background: var(--blue);
+  transform: translateY(-1px);
+}
+.gate-enter:focus-visible {
+  outline: 3px solid var(--blue);
+  outline-offset: 4px;
+}
+.gate-copy,
+.gate-top {
+  transition:
+    opacity 0.45s,
+    transform 0.6s;
+}
+.gate.is-leaving .gate-copy,
+.gate.is-leaving .gate-top,
+.gate.is-leaving .gate-hint,
+.gate.is-leaving .gate-cursor {
+  opacity: 0;
+}
+.gate.is-leaving .gate-copy {
+  transform: translateY(14px);
+}
+.gate-cursor {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  border: 1.5px solid var(--ink);
+  border-radius: 50%;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.3s,
+    width 0.2s,
+    height 0.2s,
+    margin 0.2s,
+    border-color 0.2s,
+    background 0.2s;
+}
+.gate-cursor::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 4px;
+  height: 4px;
+  margin: -2px 0 0 -2px;
+  border-radius: 50%;
+  background: var(--blue);
+}
+.gate.has-cursor,
+.gate.has-cursor .gate-enter {
+  cursor: none;
+}
+.gate.has-cursor.has-moved .gate-cursor {
+  opacity: 1;
+}
+.gate-cursor.is-over {
+  width: 58px;
+  height: 58px;
+  margin: -29px 0 0 -29px;
+  border-color: #fff;
+  background: rgba(255, 255, 255, 0.12);
+}
+@media (max-aspect-ratio: 6/5) {
+  .gate-top,
+  .gate-hint {
+    left: 20px;
+    right: 20px;
+  }
+  .gate-top {
+    top: 22px;
+  }
+  .gate-mark {
+    font-size: 28px;
+  }
+  .gate-copy {
+    left: 20px;
+    right: 20px;
+    bottom: 9vh;
+    width: auto;
+  }
+  .gate-title {
+    font-size: clamp(40px, 11.5vw, 72px);
+    margin: 14px 0 16px;
+  }
+  .gate-lead {
+    font-size: 15px;
+  }
+  .gate-enter {
+    margin-top: 22px;
+  }
+  .gate-hint {
+    display: none;
+  }
+}
+
 /* ---------- Atlas ---------- */
 .coords {
   color: var(--blue);

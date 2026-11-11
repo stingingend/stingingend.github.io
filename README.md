@@ -28,6 +28,7 @@ The intended repository is `stingingend/stingingend.github.io`. In **Settings â†
 - The Roblox graphic is an illustration, not a game screenshot.
 - The CommonTime calendar and CoachZilla route are interactive illustrations with sample data, not live project data or screenshots. Both are labelled "sample data" on the page.
 - The CodeAtlas graph shows six real files from `backend/app` and the real imports between them. Update `FILES` and `IMPORTS` in `script.js` if the source changes.
+- The entry screen (`#gate`) is a WebGL shader in `script.js` (`GATE_SHADER`): a marble Atlantis under water that ripples under the pointer. It is skipped when the URL has a `#section` link, shows a still frame with reduced motion, and falls back to a plain CSS pattern without WebGL. To remove it, delete the `gate-on` script in the `<head>` of `index.html`.
 - The atlas map is an invented world: each project is an island, and the coordinates are derived from the map positions, not real places. Add or move a place in `PLACES` in `script.js` and add a matching link in the `atlas-places` list in `index.html`.
 - Without JavaScript the map falls back to a plain list of links and the three demos fall back to static illustrations.
 - Layouts adapt to mobile screens; links support visible keyboard focus and smooth scrolling respects reduced motion preferences.
