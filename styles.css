@@ -907,6 +907,77 @@ footer::before {
   }
 }
 
+/* Link to the Atlantis game */
+.game-banner {
+  position: relative;
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+  margin: 0 0 56px;
+  padding: 40px 44px;
+  overflow: hidden;
+  color: #fff;
+  background: linear-gradient(160deg, #1b7fa3 0%, #0e5a7c 45%, #093a55 100%);
+  border-radius: 6px;
+  box-shadow:
+    0 2px 6px -2px rgba(30, 50, 90, 0.12),
+    0 26px 48px -32px rgba(30, 50, 90, 0.5);
+  transition: transform 0.3s;
+}
+.game-banner:hover {
+  color: #fff;
+  transform: translateY(-3px);
+}
+.game-banner svg {
+  position: absolute;
+  right: -60px;
+  top: 50%;
+  width: 380px;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+.game-banner .eyebrow {
+  color: #bfe6f5;
+}
+.game-banner strong {
+  font-size: 40px;
+  font-weight: 600;
+  letter-spacing: -1.6px;
+  line-height: 1.15;
+}
+.game-text {
+  max-width: 420px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #d5eef8;
+}
+.game-play {
+  margin-top: 12px;
+  padding: 11px 20px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--paper);
+  border-radius: 999px;
+}
+.game-play span {
+  color: var(--blue);
+  padding-left: 8px;
+}
+@media (max-width: 720px) {
+  .game-banner {
+    padding: 28px 24px;
+    margin-bottom: 38px;
+  }
+  .game-banner svg {
+    width: 260px;
+    right: -110px;
+  }
+  .game-banner strong {
+    font-size: 34px;
+  }
+}
+
 /* ---------- Atlantis entry screen ---------- */
 .gate {
   display: none;

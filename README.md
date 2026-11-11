@@ -32,3 +32,12 @@ The intended repository is `stingingend/stingingend.github.io`. In **Settings â†
 - The atlas map is an invented world: each project is an island, and the coordinates are derived from the map positions, not real places. Add or move a place in `PLACES` in `script.js` and add a matching link in the `atlas-places` list in `index.html`.
 - Without JavaScript the map falls back to a plain list of links and the three demos fall back to static illustrations.
 - Layouts adapt to mobile screens; links support visible keyboard focus and smooth scrolling respects reduced motion preferences.
+
+## Atlantis game
+
+`atlantis/` is a first-person browser game: `index.html`, `game.js`, 27 models in `models/` and ground textures in `textures/` (about 17 MB in total). It uses three.js 0.160 from the jsDelivr CDN, so unlike the rest of the site it needs that one outside request.
+
+- The models were made in Blender and compressed with `gltf-transform optimize --texture-compress webp --texture-size 1024`. The originals are not in this repository.
+- The city layout is in `buildCity()` and the terrain in `seabed()`, both in `game.js`.
+- `atlantis/?cam=x,y,z,yaw,pitch` opens with the camera at that spot, for checking a view.
+- The deploy workflow copies the `atlantis` folder alongside the five site files.
