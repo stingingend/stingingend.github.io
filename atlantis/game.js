@@ -853,8 +853,29 @@ function look(dx, dy, sensitivity) {
   yaw -= dx * sensitivity;
   pitch = Math.max(-1.45, Math.min(1.45, pitch - dy * sensitivity));
 }
+// While the mouse is captured, browsers (Chrome on Windows especially) now and
+// then report one huge movement that never happened, which whips the view
+// round. Real motion builds up over several events, so a single event far
+// larger than the recent ones is dropped.
+let recentMove = 0;
+let skipMoves = 0;
+document.addEventListener("pointerlockchange", () => {
+  recentMove = 0;
+  skipMoves = 2; // the first events after capture are often junk too
+});
 document.addEventListener("mousemove", (event) => {
-  if (document.pointerLockElement === canvas) look(event.movementX, event.movementY, 0.0022);
+  if (document.pointerLockElement !== canvas) return;
+  const dx = event.movementX;
+  const dy = event.movementY;
+  const size = Math.hypot(dx, dy);
+  if (skipMoves > 0) {
+    skipMoves--;
+    return;
+  }
+  const spike = size > 300 || (size > 70 && size > recentMove * 6 + 40);
+  recentMove += (Math.min(size, 300) - recentMove) * 0.35;
+  if (spike) return;
+  look(dx, dy, 0.0022);
 });
 
 // Touch: left half of the screen swims, right half looks.
@@ -912,22 +933,31 @@ function begin() {
     cover.hidden = true;
     return;
   }
+  capture(true);
+}
+function capture(raw) {
   try {
-    const request = canvas.requestPointerLock();
-    if (request && request.catch) request.catch(useDragLook);
+    // Raw input skips the system's pointer acceleration, which is steadier.
+    const request = raw ? canvas.requestPointerLock({ unadjustedMovement: true }) : canvas.requestPointerLock();
+    if (request && request.catch)
+      request.catch((error) => {
+        if (raw && error && error.name === "NotSupportedError") capture(false);
+        else useDragLook();
+      });
   } catch {
-    useDragLook();
+    if (raw) capture(false);
+    else useDragLook();
   }
-  setTimeout(useDragLook, 600);
 }
 goButton.addEventListener("click", begin);
 document.addEventListener("pointerlockerror", useDragLook);
 document.addEventListener("pointerlockchange", () => {
-  if (touchDevice || dragLook) return;
+  if (touchDevice) return;
   if (document.pointerLockElement === canvas) {
+    dragLook = false; // the capture worked after all
     playing = true;
     cover.hidden = true;
-  } else if (playing) pause();
+  } else if (playing && !dragLook) pause();
 });
 addEventListener("keydown", (event) => {
   if (event.code === "Escape" && playing && (dragLook || touchDevice)) pause();
@@ -936,7 +966,7 @@ let dragging = false;
 canvas.addEventListener("mousedown", () => (dragging = dragLook && playing));
 addEventListener("mouseup", () => (dragging = false));
 document.addEventListener("mousemove", (event) => {
-  if (dragging) look(event.movementX, event.movementY, 0.004);
+  if (dragging && document.pointerLockElement !== canvas) look(event.movementX, event.movementY, 0.004);
 });
 
 function swim(dt) {
