@@ -41,7 +41,7 @@
       { id: "about", name: "About", seed: 90, tint: "#eae3cc", wide: [1000, 338, 42], tall: [185, 612, 44] },
     ];
     const LAYOUTS = {
-      wide: { w: 1120, h: 470, start: [96, 86], compass: [1052, 66], step: 80, fs: 10, sea: [236, 436] },
+      wide: { w: 1120, h: 470, start: [96, 86], compass: [1052, 66], step: 80, fs: 10, sea: null },
       tall: { w: 600, h: 720, start: [470, 76], compass: [505, 652], step: 75, fs: 15, sea: null },
     };
     const byId = Object.fromEntries(PLACES.map((p) => [p.id, p]));
@@ -251,10 +251,10 @@
       const seen = visited.size;
       countLabel.textContent =
         seen === 0
-          ? "Five places to explore"
+          ? "5 places"
           : seen === PLACES.length
-            ? "All five places explored"
-            : `${seen} of ${PLACES.length} places explored`;
+            ? "All 5 visited"
+            : `${seen} of ${PLACES.length} visited`;
       locator.update();
     }
 
@@ -613,7 +613,7 @@
     $(".visual-bar span:last-child", visual).textContent = "AVAILABILITY / TRY IT · SAMPLE DATA";
 
     const head = html("div", { class: "calendar-heading" }, art);
-    html("span", {}, head).innerHTML = "Find a time. <strong>Make it happen.</strong>";
+    html("span", {}, head).innerHTML = "When is <strong>everyone free?</strong>";
     const clear = html("button", { type: "button", class: "calendar-clear", text: "Clear", hidden: "" }, head);
     const status = html("p", { class: "calendar-status", "aria-live": "polite" }, art);
     const grid = html("div", { class: "calendar-grid", role: "group", "aria-label": "Your availability" }, art);
@@ -668,8 +668,8 @@
         cell.setAttribute("aria-label", `${label}, ${count} of ${OTHERS.length} others free${match ? ", everyone is free" : ""}`);
       }
       clear.hidden = mine.size === 0;
-      if (!mine.size) status.textContent = "Two people have replied. Mark the times you’re free.";
-      else if (!matches.length) status.textContent = "No time works for all three yet. Try a darker square.";
+      if (!mine.size) status.textContent = "Two people have replied. Mark when you’re free.";
+      else if (!matches.length) status.textContent = "No time works for all three yet.";
       else
         status.textContent =
           `Everyone’s free ${matches[0]}` + (matches.length > 1 ? ` and ${matches.length - 1} more` : "") + ".";
@@ -1524,8 +1524,8 @@ void main() {
 
       const count =
         found.size === 0
-          ? "FIVE HIDDEN ENTRANCES"
-          : `${found.size} OF ${SITES.length} ENTRANCES FOUND`;
+          ? "5 ENTRANCES"
+          : `${found.size} OF ${SITES.length} FOUND`;
       if (count !== shownTally) tally.textContent = shownTally = count;
     }
 
@@ -1591,7 +1591,68 @@ void main() {
     loop();
   }
 
-  for (const feature of [gate, atlas, importGraph, availability, busRoute]) {
+  /* ------------------------------------------------------------------ *
+   * Page decoration: sections ease in on scroll, and a ruler down the
+   * left edge shows where you are on the page.
+   * ------------------------------------------------------------------ */
+  function decorate() {
+    document.documentElement.classList.add("js");
+    const watcher = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          entry.target.classList.add("is-in");
+          watcher.unobserve(entry.target);
+        }
+      },
+      { threshold: 0.08 },
+    );
+    for (const node of $$(".atlas, .section-heading, .featured, .project-card, .roblox-project, .about")) {
+      node.classList.add("reveal");
+      watcher.observe(node);
+    }
+
+    const stops = [
+      ["codeatlas", "01"],
+      ["commontime", "02"],
+      ["coachzilla", "03"],
+      ["roblox", "04"],
+      ["about", "05"],
+    ].map(([id, label]) => ({ id, label, node: document.getElementById(id) }));
+    const rail = html("div", { class: "rail", "aria-hidden": "true" }, document.body);
+    const marker = html("i", {}, rail);
+    for (const stop of stops) {
+      stop.button = html("button", { type: "button", tabindex: "-1", text: stop.label }, rail);
+      stop.button.addEventListener("click", () =>
+        stop.node.scrollIntoView({ behavior: reduceMotion.matches ? "auto" : "smooth", block: "start" }),
+      );
+    }
+    let queued = false;
+    function place() {
+      queued = false;
+      const total = document.documentElement.scrollHeight;
+      const line = scrollY + innerHeight * 0.35;
+      marker.style.top = `${Math.min(100, (line / total) * 100)}%`;
+      let current = null;
+      for (const stop of stops) {
+        const top = stop.node.getBoundingClientRect().top + scrollY;
+        stop.button.style.top = `${(top / total) * 100}%`;
+        if (top <= line) current = stop;
+      }
+      for (const stop of stops) stop.button.classList.toggle("is-here", stop === current);
+    }
+    const schedule = () => {
+      if (queued) return;
+      queued = true;
+      requestAnimationFrame(place);
+    };
+    addEventListener("scroll", schedule, { passive: true });
+    addEventListener("resize", schedule);
+    addEventListener("load", schedule);
+    place();
+  }
+
+  for (const feature of [gate, atlas, importGraph, availability, busRoute, decorate]) {
     try {
       feature();
     } catch (error) {

@@ -15,7 +15,7 @@
     />
     <title>Talon Brady — Selected work</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="styles.css?v=atlantis-2" />
+    <link rel="stylesheet" href="styles.css?v=atlantis-3" />
     <script>
       // Show the entry screen unless the visitor followed a link to a section.
       if (!location.hash) document.documentElement.classList.add("gate-on");
@@ -29,14 +29,13 @@
         <span>ATLANTIS / PLATE 00</span>
       </div>
       <div class="gate-copy">
-        <p class="gate-eyebrow">TALON BRADY / PORTFOLIO</p>
-        <p class="gate-title">Every atlas has a lost city<span>.</span></p>
+        <p class="gate-eyebrow">PORTFOLIO</p>
+        <p class="gate-title">Talon Brady<span>.</span></p>
         <p class="gate-lead">
-          Tools, experiments, and things I’ve built, charted just below the
-          surface.
+          Software projects. Drag to look around, or go straight in.
         </p>
         <button type="button" class="gate-enter">
-          Dive in <span aria-hidden="true">↓</span>
+          Enter <span aria-hidden="true">↓</span>
         </button>
       </div>
       <p class="gate-hint" aria-hidden="true">MOVE ACROSS THE WATER</p>
@@ -63,15 +62,41 @@
       </header>
       <main id="main">
         <section class="intro" aria-labelledby="intro-title">
+          <svg class="hero-emblem" viewBox="-220 -220 440 440" aria-hidden="true">
+            <g fill="none">
+              <g stroke="#cddbf6">
+                <circle r="150" stroke-width="26" />
+                <circle r="92" stroke-width="20" />
+                <circle r="44" stroke-width="16" />
+                <path d="M21 32L122 183" stroke-width="9" />
+              </g>
+              <g stroke="#94b1ea" stroke-width=".9">
+                <circle r="163" />
+                <circle r="137" />
+                <circle r="102" />
+                <circle r="82" />
+                <circle r="52" />
+                <circle r="36" />
+                <circle r="14" stroke="#2252d4" stroke-width="1.2" />
+              </g>
+              <g stroke="#b3bfd0">
+                <circle r="181" stroke-width=".8" />
+                <circle r="191" stroke-width=".8" />
+                <circle class="emblem-ticks" r="186" stroke-width="10" stroke-dasharray="1 5.492" />
+                <circle class="emblem-dash" r="210" stroke-width="1.2" stroke-dasharray="8 8.5" />
+              </g>
+            </g>
+            <circle r="4" fill="#2252d4" />
+          </svg>
           <div class="eyebrow">
             <span class="small-line" aria-hidden="true"></span> PERSONAL
             PORTFOLIO
           </div>
           <h1 id="intro-title">Talon Brady<span>.</span></h1>
           <div class="intro-bottom">
-            <p>Building useful tools.<br />Exploring what’s possible.</p>
+            <p>Developer tools, web apps,<br />and a Roblox game.</p>
             <div class="intro-note">
-              Software, web development,<br />and interactive experiences.
+              Pick a place on the map,<br />or scroll down.
             </div>
             <a
               class="round-link"
@@ -82,7 +107,7 @@
           </div>
           <figure class="code-map atlas" id="atlas" aria-labelledby="atlas-title">
             <figcaption>
-              <span id="atlas-title">Atlas / the world of my work</span
+              <span id="atlas-title">Atlas / project map</span
               ><span>CHOOSE A DESTINATION</span>
             </figcaption>
             <div class="atlas-stage">
@@ -109,7 +134,7 @@
                 </li>
                 <li>
                   <a class="place" href="#about" data-place="about"
-                    ><b>About</b><span>Home port</span></a
+                    ><b>About</b><span>Background</span></a
                   >
                 </li>
               </ol>
@@ -117,7 +142,7 @@
             <div class="figure-bottom">
               <span><i aria-hidden="true"></i> YOU ARE HERE</span
               ><span class="atlas-count" aria-live="polite"
-                >Five places to explore</span
+                >5 places</span
               >
             </div>
           </figure>
@@ -126,7 +151,7 @@
         <section class="work" id="projects" aria-labelledby="work-title">
           <div class="section-heading">
             <h2 id="work-title">Selected work <span>04</span></h2>
-            <p>Ideas, experiments, and things I’ve built.</p>
+            <p>Most of these are interactive.</p>
           </div>
           <article
             class="featured project"
@@ -329,7 +354,7 @@
                 <div class="calendar-art" aria-hidden="true">
                   <div class="calendar-heading">
                     <span
-                      >Find a time.<br /><strong>Make it happen.</strong></span
+                      >When is<br /><strong>everyone free?</strong></span
                     ><span class="calendar-symbol">↗</span>
                   </div>
                   <div class="calendar-days">
@@ -540,9 +565,7 @@
                 <span class="coords" data-coords="roblox"></span>
               </div>
               <h3 id="roblox-title">Untitled Experience</h3>
-              <p>
-                An ongoing exploration in Roblox. Step inside the experience.
-              </p>
+              <p>A Roblox game I’m still building.</p>
               <ul class="tags" aria-label="Platform">
                 <li>Roblox Studio</li>
               </ul>
@@ -560,14 +583,14 @@
         <section class="about" id="about" aria-labelledby="about-title">
           <div class="about-copy">
             <div class="eyebrow">
-              BEHIND THE PROJECTS
+              ABOUT
               <span class="coords" data-coords="about"></span>
             </div>
-            <h2 id="about-title">Curiosity, put to work.</h2>
+            <h2 id="about-title">About these projects</h2>
             <p>
-              My projects explore how software can make complicated things
-              easier to navigate—from understanding a codebase to finding a time
-              to meet.
+              Most of what I build is about making something complicated
+              easier to get around, like a codebase, a group schedule, or a bus
+              route.
             </p>
             <a
               class="text-link"
@@ -588,8 +611,7 @@
             <div class="detail-row" id="resume">
               <h3>Resume</h3>
               <p>
-                A downloadable resume is coming soon.<br />For now, explore my
-                work above.
+                Coming soon.
               </p>
             </div>
           </div>
@@ -601,6 +623,6 @@
         ><a href="#top">Back to top ↑</a>
       </footer>
     </div>
-    <script src="script.js?v=atlantis-2"></script>
+    <script src="script.js?v=atlantis-3"></script>
   </body>
 </html>
