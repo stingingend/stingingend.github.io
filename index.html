@@ -15,7 +15,13 @@
     />
     <title>Talon Brady — Selected work</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="styles.css?v=atlantis-5" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..800,0..100,0..1;1,9..144,300..800,0..100,0..1&family=Instrument+Sans:ital,wght@0,400..700;1,400..700&display=swap"
+    />
+    <link rel="stylesheet" href="styles.css?v=atlantis-9" />
     <script>
       // Show the entry screen unless the visitor followed a link to a section.
       if (!location.hash) document.documentElement.classList.add("gate-on");
@@ -32,7 +38,7 @@
         <p class="gate-eyebrow">PORTFOLIO</p>
         <p class="gate-title">Talon Brady<span>.</span></p>
         <p class="gate-lead">
-          Software projects. Drag to look around, or go straight in.
+          Drag around to explore, or just head in.
         </p>
         <button type="button" class="gate-enter">
           Enter <span aria-hidden="true">↓</span>
@@ -41,6 +47,16 @@
       <p class="gate-hint" aria-hidden="true">MOVE ACROSS THE WATER</p>
       <div class="gate-cursor" aria-hidden="true"></div>
     </section>
+    <svg class="wobble-defs" aria-hidden="true" focusable="false">
+      <filter id="wobble" x="-5%" y="-5%" width="110%" height="110%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.011" numOctaves="2" seed="4" />
+        <feDisplacementMap in="SourceGraphic" scale="6" />
+      </filter>
+      <filter id="wobble-soft" x="-10%" y="-10%" width="120%" height="120%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="2" seed="9" />
+        <feDisplacementMap in="SourceGraphic" scale="3" />
+      </filter>
+    </svg>
     <a class="skip-link" href="#main">Skip to content</a>
     <div class="page" id="top">
       <header class="masthead">
@@ -49,7 +65,6 @@
         >
         <nav aria-label="Main navigation">
           <a href="#projects">Projects</a>
-          <a href="atlantis/">Game</a>
           <a href="#about">About</a>
           <a href="#resume">Resume</a>
           <a
@@ -63,41 +78,14 @@
       </header>
       <main id="main">
         <section class="intro" aria-labelledby="intro-title">
-          <svg class="hero-emblem" viewBox="-220 -220 440 440" aria-hidden="true">
-            <g fill="none">
-              <g stroke="#cddbf6">
-                <circle r="150" stroke-width="26" />
-                <circle r="92" stroke-width="20" />
-                <circle r="44" stroke-width="16" />
-                <path d="M21 32L122 183" stroke-width="9" />
-              </g>
-              <g stroke="#94b1ea" stroke-width=".9">
-                <circle r="163" />
-                <circle r="137" />
-                <circle r="102" />
-                <circle r="82" />
-                <circle r="52" />
-                <circle r="36" />
-                <circle r="14" stroke="#2252d4" stroke-width="1.2" />
-              </g>
-              <g stroke="#b3bfd0">
-                <circle r="181" stroke-width=".8" />
-                <circle r="191" stroke-width=".8" />
-                <circle class="emblem-ticks" r="186" stroke-width="10" stroke-dasharray="1 5.492" />
-                <circle class="emblem-dash" r="210" stroke-width="1.2" stroke-dasharray="8 8.5" />
-              </g>
-            </g>
-            <circle r="4" fill="#2252d4" />
-          </svg>
           <div class="eyebrow">
-            <span class="small-line" aria-hidden="true"></span> PERSONAL
-            PORTFOLIO
+            <span class="small-line" aria-hidden="true"></span> PORTFOLIO
           </div>
           <h1 id="intro-title">Talon Brady<span>.</span></h1>
           <div class="intro-bottom">
-            <p>Developer tools, web apps,<br />and a Roblox game.</p>
+            <p>I build software.<br />Here’s some of it.</p>
             <div class="intro-note">
-              Pick a place on the map,<br />or scroll down.
+              Click an island,<br />or just scroll.
             </div>
             <a
               class="round-link"
@@ -109,7 +97,7 @@
           <figure class="code-map atlas" id="atlas" aria-labelledby="atlas-title">
             <figcaption>
               <span id="atlas-title">Atlas / project map</span
-              ><span>CHOOSE A DESTINATION</span>
+              ><span>PICK ONE</span>
             </figcaption>
             <div class="atlas-stage">
               <ol class="atlas-places">
@@ -151,8 +139,8 @@
 
         <section class="work" id="projects" aria-labelledby="work-title">
           <div class="section-heading">
-            <h2 id="work-title">Selected work <span>05</span></h2>
-            <p>Most of these are interactive.</p>
+            <h2 id="work-title">Projects <span>04</span></h2>
+            <p>You can poke at most of these.</p>
           </div>
           <article
             class="featured project"
@@ -165,11 +153,12 @@
                 <span class="coords" data-coords="codeatlas"></span>
               </div>
               <h3 id="codeatlas-title">CodeAtlas</h3>
-              <p class="project-lead">Find your way through a codebase.</p>
+              <p class="project-lead">Paste in a GitHub repo and click around its code.</p>
               <p>
-                A source browser for public GitHub repositories. Search
-                definitions, explore dependency graphs, and trace connections
-                across Python, JavaScript, TypeScript, C, and C++.
+                It shows what’s defined where and which files import which.
+                Works with Python, JavaScript, TypeScript, C and C++. The graph
+                here is real: those are files from CodeAtlas itself, so go ahead
+                and drag them around.
               </p>
               <ul class="tags" aria-label="CodeAtlas technologies">
                 <li>Python</li>
@@ -382,9 +371,9 @@
                 </div>
                 <h3 id="commontime-title">CommonTime</h3>
                 <p>
-                  Collect meeting availability with Google Forms, share
-                  participant links, and review responses to plan events in
-                  Google Calendar.
+                  Finds a time that works for a group. Everyone fills in a
+                  Google Form, and it lines up the answers so you can put the
+                  event on Google Calendar.
                 </p>
                 <ul class="tags" aria-label="CommonTime technologies">
                   <li>JavaScript</li>
@@ -481,9 +470,9 @@
                 </div>
                 <h3 id="coachzilla-title">CoachZilla</h3>
                 <p>
-                  An educational bus route planning application with station
-                  maps, route previews, and travel summaries that account for
-                  fuel constraints.
+                  A bus route planner, built as a team project. It maps the
+                  stations, previews the route, and tells you if the bus will
+                  need to stop for fuel.
                 </p>
                 <ul class="tags" aria-label="CoachZilla technologies">
                   <li>JavaScript</li>
@@ -496,7 +485,7 @@
                     href="https://github.com/stingingend/CoachZilla-main"
                     target="_blank"
                     rel="noreferrer"
-                    >Explore CoachZilla <span aria-hidden="true">↗</span></a
+                    >See the code <span aria-hidden="true">↗</span></a
                   >
                 </div>
               </div>
@@ -571,7 +560,7 @@
                 <span class="coords" data-coords="roblox"></span>
               </div>
               <h3 id="roblox-title">Untitled Experience</h3>
-              <p>A Roblox game I’m still building.</p>
+              <p>A Roblox game. Not finished, and not named yet.</p>
               <ul class="tags" aria-label="Platform">
                 <li>Roblox Studio</li>
               </ul>
@@ -584,24 +573,6 @@
               >
             </div>
           </article>
-
-          <a class="game-banner" href="atlantis/" aria-labelledby="game-title">
-            <svg viewBox="-220 -220 440 440" aria-hidden="true">
-              <g fill="none" stroke="#9fd8ee">
-                <circle r="150" stroke-width="26" opacity=".28" />
-                <circle r="92" stroke-width="20" opacity=".28" />
-                <circle r="44" stroke-width="16" opacity=".28" />
-                <circle r="186" stroke-width="10" stroke-dasharray="1 5.492" opacity=".5" />
-              </g>
-            </svg>
-            <span class="eyebrow">05 / BROWSER GAME</span>
-            <strong id="game-title">Atlantis</strong>
-            <span class="game-text"
-              >A first-person dive through a sunken marble city. Runs in the
-              browser, built with three.js.</span
-            >
-            <span class="game-play">Play <span aria-hidden="true">→</span></span>
-          </a>
         </section>
 
         <section class="about" id="about" aria-labelledby="about-title">
@@ -610,11 +581,10 @@
               ABOUT
               <span class="coords" data-coords="about"></span>
             </div>
-            <h2 id="about-title">About these projects</h2>
+            <h2 id="about-title">About</h2>
             <p>
-              Most of what I build is about making something complicated
-              easier to get around, like a codebase, a group schedule, or a bus
-              route.
+              I like taking something confusing and making it easier to
+              find your way around. That’s most of what’s on this page.
             </p>
             <a
               class="text-link"
@@ -626,7 +596,7 @@
           </div>
           <div class="details">
             <div class="detail-row">
-              <h3>Tools I work with</h3>
+              <h3>What I use</h3>
               <p>
                 Python · JavaScript · TypeScript<br />FastAPI · Next.js ·
                 PostgreSQL<br />Google APIs · Firebase · Roblox Studio
@@ -635,7 +605,7 @@
             <div class="detail-row" id="resume">
               <h3>Resume</h3>
               <p>
-                Coming soon.
+                Not up yet.
               </p>
             </div>
           </div>
@@ -644,9 +614,9 @@
       <footer>
         <a class="footer-name" href="#top">Talon Brady<span>.</span></a
         ><span>© <span id="year">2026</span></span
-        ><a href="#top">Back to top ↑</a>
+        ><a href="#top">Top ↑</a>
       </footer>
     </div>
-    <script src="script.js?v=atlantis-5"></script>
+    <script src="script.js?v=atlantis-9"></script>
   </body>
 </html>

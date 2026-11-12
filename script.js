@@ -668,8 +668,8 @@
         cell.setAttribute("aria-label", `${label}, ${count} of ${OTHERS.length} others free${match ? ", everyone is free" : ""}`);
       }
       clear.hidden = mine.size === 0;
-      if (!mine.size) status.textContent = "Two people have replied. Mark when you’re free.";
-      else if (!matches.length) status.textContent = "No time works for all three yet.";
+      if (!mine.size) status.textContent = "Two people already answered. Click when you’re free.";
+      else if (!matches.length) status.textContent = "Nothing works for all three yet.";
       else
         status.textContent =
           `Everyone’s free ${matches[0]}` + (matches.length > 1 ? ` and ${matches.length - 1} more` : "") + ".";
@@ -1524,7 +1524,7 @@ void main() {
 
       const count =
         found.size === 0
-          ? "5 ENTRANCES"
+          ? "5 WAYS IN"
           : `${found.size} OF ${SITES.length} FOUND`;
       if (count !== shownTally) tally.textContent = shownTally = count;
     }
@@ -1652,7 +1652,203 @@ void main() {
     place();
   }
 
-  for (const feature of [gate, atlas, importGraph, availability, busRoute, decorate]) {
+  /* ------------------------------------------------------------------ *
+   * Water: light moving on the page, a waterline under the name, wave
+   * dividers, a deep end, bubbles, and a splash wherever you click.
+   * Everything here is drawn with slight irregularity on purpose.
+   * ------------------------------------------------------------------ */
+  function water() {
+    const still = reduceMotion.matches;
+    const intro = $(".intro");
+    const atlasFigure = $("#atlas");
+
+    // A seeded wobble so each line is uneven, but the same on every visit.
+    function unevenLine(seed, width, mid, swing, step = 22) {
+      let s = seed;
+      const rand = () => {
+        s = (s * 16807) % 2147483647;
+        return s / 2147483647;
+      };
+      const a = [rand() * 6, rand() * 6, rand() * 6];
+      const points = [];
+      for (let x = 0; x <= width; x += step) {
+        const y =
+          mid +
+          swing * (0.55 * Math.sin(x * 0.013 + a[0]) + 0.3 * Math.sin(x * 0.031 + a[1]) + 0.15 * Math.sin(x * 0.07 + a[2])) +
+          (rand() - 0.5) * swing * 0.35;
+        points.push(`${x} ${y.toFixed(1)}`);
+      }
+      return points;
+    }
+
+    // --- The waterline, between the name and the map ---
+    if (intro && atlasFigure) {
+      const surface = html("div", { class: "surface", "aria-hidden": "true" });
+      const clip = html("div", { class: "surface-clip" }, surface);
+      // Each wave repeats every 1200 units and is drawn twice, so sliding it
+      // left by half its width loops without a seam.
+      const crest = (phase, lift, swing) => {
+        const points = [];
+        for (let x = 0; x <= 2400; x += 16) {
+          const t = (x / 1200) * Math.PI * 2;
+          const y = lift + swing * (Math.sin(t * 3 + phase) + 0.5 * Math.sin(t * 7 + phase * 2.3) + 0.3 * Math.sin(t * 13 + phase * 0.7));
+          points.push(`${x} ${y.toFixed(1)}`);
+        }
+        return points;
+      };
+      const front = crest(0.4, 30, 6);
+      const back = crest(2.1, 40, 4.5);
+      const first = svg("svg", { viewBox: "0 0 2400 64", preserveAspectRatio: "none" }, clip);
+      svg("path", { class: "air", d: `M0 0L${front.join("L")}L2400 0Z` }, first);
+      svg("path", { class: "crest", d: `M${front.join("L")}` }, first);
+      const second = svg("svg", { viewBox: "0 0 2400 64", preserveAspectRatio: "none" }, clip);
+      svg("path", { class: "crest faint", d: `M${back.join("L")}` }, second);
+      intro.insertBefore(surface, atlasFigure);
+    }
+
+    // --- Wave dividers in place of ruled lines ---
+    const rule = (host, seed, light) => {
+      if (!host) return;
+      const node = svg("svg", { class: light ? "wave-rule light" : "wave-rule", viewBox: "0 0 1000 18", preserveAspectRatio: "none", "aria-hidden": "true" });
+      svg("path", { d: `M${unevenLine(seed, 1000, 9, 5).join("L")}` }, node);
+      host.prepend(node);
+    };
+    rule($(".work"), 11, false);
+    rule($(".project-grid"), 23, true);
+    rule($(".roblox-project"), 37, true);
+
+    // --- The deep end ---
+    const about = $(".about");
+    if (about) {
+      const edge = svg("svg", { class: "deep-edge", viewBox: "0 0 1000 46", preserveAspectRatio: "none", "aria-hidden": "true" });
+      svg("path", { d: `M0 46L${unevenLine(53, 1000, 22, 13, 18).join("L")}L1000 46Z` }, edge);
+      about.prepend(edge);
+      if (!still) {
+        const bubbles = html("div", { class: "bubbles", "aria-hidden": "true" });
+        let s = 7;
+        const rand = () => {
+          s = (s * 16807) % 2147483647;
+          return s / 2147483647;
+        };
+        for (let i = 0; i < 14; i++) {
+          const bubble = html("i", {}, bubbles);
+          const size = 4 + rand() * 12;
+          bubble.style.cssText = `left:${(rand() * 100).toFixed(1)}%;width:${size.toFixed(1)}px;height:${size.toFixed(1)}px;animation-duration:${(9 + rand() * 12).toFixed(1)}s;animation-delay:-${(rand() * 20).toFixed(1)}s`;
+        }
+        about.prepend(bubbles);
+      }
+    }
+
+    if (still) return;
+
+    // --- A splash wherever the page is clicked ---
+    addEventListener("pointerdown", (event) => {
+      if ($(".gate-on") === document.documentElement) return;
+      if (event.target.closest("a, button, input, label, .graph-node, .island, .place")) return;
+      const splash = html("span", { class: "splash", "aria-hidden": "true" }, document.body);
+      splash.style.left = `${event.clientX}px`;
+      splash.style.top = `${event.clientY}px`;
+      html("i", {}, splash);
+      html("i", {}, splash);
+      html("i", {}, splash);
+      setTimeout(() => splash.remove(), 2000);
+    });
+
+    // --- Light on the water: a web of caustics behind the whole page ---
+    const canvas = html("canvas", { class: "water-light", "aria-hidden": "true" });
+    const gl = canvas.getContext("webgl", { alpha: true, premultipliedAlpha: true, antialias: false });
+    if (!gl) return;
+    const compile = (type, source) => {
+      const shader = gl.createShader(type);
+      gl.shaderSource(shader, source);
+      gl.compileShader(shader);
+      return gl.getShaderParameter(shader, gl.COMPILE_STATUS) ? shader : null;
+    };
+    const vertex = compile(gl.VERTEX_SHADER, "attribute vec2 a;void main(){gl_Position=vec4(a,0.,1.);}");
+    const fragment = compile(
+      gl.FRAGMENT_SHADER,
+      `#ifdef GL_FRAGMENT_PRECISION_HIGH
+precision highp float;
+#else
+precision mediump float;
+#endif
+uniform vec2 uRes;
+uniform float uTime;
+uniform float uScroll;
+uniform vec2 uMouse;
+float caustic(vec2 uv) {
+  vec2 p = mod(uv * 6.2831853, 6.2831853) - 250.0;
+  vec2 i = p;
+  float c = 1.0;
+  float t = uTime * 0.4 + 23.0;
+  for (int n = 0; n < 4; n++) {
+    float tt = t * (1.0 - 3.5 / float(n + 1));
+    i = p + vec2(cos(tt - i.x) + sin(tt + i.y), sin(tt - i.y) + cos(tt + i.x));
+    c += 1.0 / length(vec2(p.x / (sin(i.x + tt) / 0.005), p.y / (cos(i.y + tt) / 0.005)));
+  }
+  c = 1.17 - pow(c / 4.0, 1.4);
+  return pow(abs(c), 8.0);
+}
+void main() {
+  vec2 uv = gl_FragCoord.xy / uRes.y;
+  // the pointer pushes the light around, like a hand under the surface
+  vec2 d = uv - uMouse;
+  float near = exp(-dot(d, d) * 22.0);
+  uv += normalize(d + 0.0001) * near * 0.04 * sin(uTime * 3.0 - length(d) * 34.0);
+  uv.y -= uScroll * 0.7;
+  float web = caustic(uv * 1.15) * 0.6 + near * 0.08;
+  gl_FragColor = vec4(vec3(web), web);
+}`,
+    );
+    if (!vertex || !fragment) return;
+    const program = gl.createProgram();
+    gl.attachShader(program, vertex);
+    gl.attachShader(program, fragment);
+    gl.linkProgram(program);
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return;
+    gl.useProgram(program);
+    gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer());
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+    const corner = gl.getAttribLocation(program, "a");
+    gl.enableVertexAttribArray(corner);
+    gl.vertexAttribPointer(corner, 2, gl.FLOAT, false, 0, 0);
+    gl.clearColor(0, 0, 0, 0);
+    const uniform = (name) => gl.getUniformLocation(program, name);
+    document.body.appendChild(canvas);
+
+    // Soft light does not need full resolution; half is plenty and cheap.
+    const fit = () => {
+      canvas.width = Math.max(1, Math.round(innerWidth * 0.5));
+      canvas.height = Math.max(1, Math.round(innerHeight * 0.5));
+      gl.viewport(0, 0, canvas.width, canvas.height);
+    };
+    addEventListener("resize", fit);
+    fit();
+    const mouse = [-9, -9];
+    const eased = [-9, -9];
+    addEventListener("pointermove", (event) => {
+      mouse[0] = event.clientX / innerHeight;
+      mouse[1] = 1 - event.clientY / innerHeight;
+      if (eased[0] < -8) eased.splice(0, 2, ...mouse);
+    });
+    const began = performance.now();
+    const draw = () => {
+      requestAnimationFrame(draw);
+      // nothing to light while the entry screen covers the page or the tab is hidden
+      if (document.hidden || document.documentElement.classList.contains("gate-on")) return;
+      eased[0] += (mouse[0] - eased[0]) * 0.12;
+      eased[1] += (mouse[1] - eased[1]) * 0.12;
+      gl.uniform2f(uniform("uRes"), canvas.width, canvas.height);
+      gl.uniform1f(uniform("uTime"), (performance.now() - began) / 1000);
+      gl.uniform1f(uniform("uScroll"), scrollY / innerHeight);
+      gl.uniform2f(uniform("uMouse"), eased[0], eased[1]);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      gl.drawArrays(gl.TRIANGLES, 0, 3);
+    };
+    draw();
+  }
+
+  for (const feature of [gate, atlas, importGraph, availability, busRoute, decorate, water]) {
     try {
       feature();
     } catch (error) {

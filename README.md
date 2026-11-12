@@ -23,7 +23,7 @@ The intended repository is `stingingend/stingingend.github.io`. In **Settings â†
 - The selected work section features CodeAtlas, CommonTime, CoachZilla, and the existing Roblox experience. Project descriptions and tools come from their public source and documentation.
 - The resume section explicitly says coming soon. Add an actual PDF and a download link when ready; no credentials, education, or work history have been invented.
 - CodeAtlas links to its source until a public live demo is deployed. No localhost link is published.
-- System fonts only; no font downloads or runtime dependencies.
+- The main page loads two typefaces from Google Fonts: Fraunces for headings and Instrument Sans for body text. If they fail to load it falls back to Georgia and Segoe UI. There are no other runtime dependencies on the main page.
 - CodeAtlas links to its current `stingingend/CodeAtlas` repository. The diagram shows selected real imports from `backend/app/main.py`; the file nodes link to GitHub source.
 - The Roblox graphic is an illustration, not a game screenshot.
 - The CommonTime calendar and CoachZilla route are interactive illustrations with sample data, not live project data or screenshots. Both are labelled "sample data" on the page.
@@ -32,15 +32,6 @@ The intended repository is `stingingend/stingingend.github.io`. In **Settings â†
 - The atlas map is an invented world: each project is an island, and the coordinates are derived from the map positions, not real places. Add or move a place in `PLACES` in `script.js` and add a matching link in the `atlas-places` list in `index.html`.
 - Without JavaScript the map falls back to a plain list of links and the three demos fall back to static illustrations.
 - Layouts adapt to mobile screens; links support visible keyboard focus and smooth scrolling respects reduced motion preferences.
-
-## Atlantis game
-
-`atlantis/` is a first-person browser game: `index.html`, `game.js`, 27 models in `models/` and ground textures in `textures/` (about 17 MB in total). It uses three.js 0.160 from the jsDelivr CDN, so unlike the rest of the site it needs that one outside request.
-
-- The models were made in Blender and compressed with `gltf-transform optimize --texture-compress webp --texture-size 1024`. The originals are not in this repository.
-- The city layout is in `buildCity()` and the terrain in `seabed()`, both in `game.js`.
-- `atlantis/?cam=x,y,z,yaw,pitch` opens with the camera at that spot, for checking a view.
-- The deploy workflow copies the `atlantis` folder alongside the five site files.
 
 ## CodeAtlas demo
 
