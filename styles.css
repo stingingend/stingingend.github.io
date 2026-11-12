@@ -5,7 +5,7 @@
   --ink: #242922;
   --muted: #60675c;
   --line: #dcded4;
-  --blue: #2252d4;
+  --blue: #12607f;
   --mono: Consolas, "Liberation Mono", monospace;
   --sans: Inter, "Segoe UI", Arial, sans-serif;
 }
@@ -24,8 +24,8 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 ::selection {
-  color: #173ba3;
-  background: #dbe4fd;
+  color: #0b4560;
+  background: #d5e9ee;
 }
 a {
   color: inherit;
@@ -247,8 +247,8 @@ h3 {
   border-color: var(--blue);
 }
 .code-map {
-  background: #ecf0e7;
-  border: 1px solid #d0d8c8;
+  background: #efede2;
+  border: 1px solid #d9d6c6;
   border-radius: 6px;
   overflow: hidden;
 }
@@ -256,7 +256,7 @@ h3 {
   display: flex;
   justify-content: space-between;
   padding: 14px 18px;
-  border-bottom: 1px solid #d0d8c8;
+  border-bottom: 1px solid #d9d6c6;
   font: 10px var(--mono);
   color: #526048;
 }
@@ -282,7 +282,7 @@ h3 {
   outline: none;
 }
 .source-node a:focus-visible rect {
-  stroke: #152c13;
+  stroke: #10242b;
   stroke-width: 5px;
 }
 .map-annotation {
@@ -294,7 +294,7 @@ h3 {
   justify-content: space-between;
   gap: 12px;
   padding: 14px 18px;
-  border-top: 1px solid #d0d8c8;
+  border-top: 1px solid #d9d6c6;
   color: #596451;
   font: 8px/1.5 var(--mono);
 }
@@ -334,9 +334,9 @@ h3 {
   align-self: center;
 }
 .calendar-visual {
-  background: #e8ecfb;
+  background: #e4f0f2;
   color: #2d4790;
-  border-color: #d3dcf6;
+  border-color: #cbe2e8;
 }
 .calendar-art {
   padding: 18px 38px 27px;
@@ -351,7 +351,7 @@ h3 {
 }
 .calendar-heading strong {
   font-weight: 600;
-  color: #2252d4;
+  color: #12607f;
 }
 .calendar-symbol {
   font-size: 32px;
@@ -373,14 +373,14 @@ h3 {
   display: grid;
   place-items: center;
   height: 27px;
-  background: #f3f5ff;
-  border: 1px solid #d8dff7;
+  background: #f0f7f8;
+  border: 1px solid #d2e7ec;
   border-radius: 3px;
   font: 17px var(--sans);
 }
 .calendar-cells .slot {
-  background: #cbd6fa;
-  border-color: #bdcaf1;
+  background: #bfdde5;
+  border-color: #a9cfd9;
 }
 .calendar-cells .overlap {
   color: white;
@@ -388,9 +388,9 @@ h3 {
   border-color: var(--blue);
 }
 .route-visual {
-  background: #e8eee2;
+  background: #ece9dc;
   color: #31543b;
-  border-color: #d1dbc9;
+  border-color: #dad7c6;
 }
 .route-visual > svg {
   display: block;
@@ -442,7 +442,7 @@ h3 {
   position: absolute;
   bottom: 14px;
   left: 18px;
-  color: #dbe3fc;
+  color: #d5e9ee;
   font: 7px var(--mono);
   letter-spacing: 1px;
 }
@@ -938,7 +938,7 @@ footer::before {
 /* Shown only if WebGL is unavailable. */
 .gate.no-gl {
   background:
-    radial-gradient(circle at 72% 50%, #2252d4 0 0.6vmin, transparent 0.7vmin),
+    radial-gradient(circle at 72% 50%, #12607f 0 0.6vmin, transparent 0.7vmin),
     repeating-radial-gradient(
       circle at 72% 50%,
       #f4f4f0 0 7vmin,
@@ -1225,7 +1225,7 @@ footer::before {
   background: var(--blue);
   border: none;
   border-radius: 999px;
-  box-shadow: 0 8px 26px rgba(34, 82, 212, 0.28);
+  box-shadow: 0 8px 26px rgba(18, 96, 127, 0.28);
   white-space: nowrap;
   opacity: 0;
   visibility: hidden;
@@ -1582,7 +1582,7 @@ input:focus-visible {
   fill: #fff;
 }
 .graph-node.is-selected .node-arrow {
-  fill: #c5d2ff;
+  fill: #c2e0e8;
 }
 .graph-node.is-import > rect,
 .graph-node.is-importer > rect {
@@ -1596,14 +1596,14 @@ input:focus-visible {
   opacity: 0.5;
 }
 .graph-node:focus-visible > rect {
-  stroke: #152c13;
+  stroke: #10242b;
   stroke-width: 4;
 }
 .graph-node a:focus-visible {
   outline: none;
 }
 .graph-node a:focus-visible .hit {
-  stroke: #152c13;
+  stroke: #10242b;
   stroke-width: 3;
 }
 .graph-edges line {
@@ -1672,18 +1672,18 @@ input:focus-visible {
   padding: 0;
   font: 15px/1 var(--sans);
   color: #fff;
-  background: #f3f5ff;
-  border: 1px solid #d8dff7;
+  background: #f0f7f8;
+  border: 1px solid #d2e7ec;
   border-radius: 3px;
   cursor: pointer;
 }
 .calendar-grid .others-1 {
-  background: #dae2fb;
-  border-color: #ccd6f5;
+  background: #d3e8ed;
+  border-color: #c4dfe6;
 }
 .calendar-grid .others-2 {
-  background: #b7c6f5;
-  border-color: #a7b8ee;
+  background: #a6ccd7;
+  border-color: #8fbdcb;
 }
 .calendar-grid .cell:hover {
   border-color: var(--blue);
@@ -1697,7 +1697,7 @@ input:focus-visible {
   box-shadow: none;
 }
 .calendar-grid .cell:focus-visible {
-  outline: 2px solid #152c13;
+  outline: 2px solid #10242b;
   outline-offset: 1px;
 }
 
@@ -1716,7 +1716,7 @@ input:focus-visible {
 }
 .route-done {
   fill: none;
-  stroke: #315d45;
+  stroke: #1d4a5a;
   stroke-width: 5;
   stroke-linecap: round;
 }
@@ -1728,12 +1728,12 @@ input:focus-visible {
 }
 .bus rect {
   fill: #f6f8f1;
-  stroke: #1d3d2c;
+  stroke: #143540;
   stroke-width: 2.5;
 }
 .bus-windows {
   fill: none;
-  stroke: #1d3d2c;
+  stroke: #143540;
   stroke-width: 1.5;
 }
 .bus.is-out rect {
@@ -1749,14 +1749,14 @@ input:focus-visible {
   align-items: center;
   gap: 6px 14px;
   padding: 9px 14px;
-  border-top: 1px solid #d1dbc9;
-  background: #eef3e9;
+  border-top: 1px solid #dad7c6;
+  background: #f1efe5;
   font: 10px var(--mono);
 }
 .route-drive {
   font: 600 10px var(--mono);
   color: #fff;
-  background: #315d45;
+  background: #1d4a5a;
   border: none;
   border-radius: 4px;
   padding: 6px 10px;
@@ -1774,7 +1774,7 @@ input:focus-visible {
 }
 .route-toggle input {
   margin: 0;
-  accent-color: #315d45;
+  accent-color: #1d4a5a;
 }
 .route-gauge {
   display: flex;
@@ -1786,7 +1786,7 @@ input:focus-visible {
   display: block;
   width: 54px;
   height: 8px;
-  border: 1px solid #315d45;
+  border: 1px solid #1d4a5a;
   border-radius: 2px;
   overflow: hidden;
 }
@@ -1794,7 +1794,7 @@ input:focus-visible {
   display: block;
   width: 100%;
   height: 100%;
-  background: #315d45;
+  background: #1d4a5a;
 }
 .route-gauge.is-low i {
   background: #b3402e;
@@ -2545,6 +2545,193 @@ footer {
     font-size: 40px;
   }
 }
+
+/* ---------- Palette and plain-use pass ----------
+   One family of colour: chart paper, sea ink, the water itself, sand for
+   land. One warm colour, buoy red, used only to mark a spot. Labels are
+   written like captions, and the first screen doubles as a contents list. */
+:root {
+  --paper: #f6f3ea;
+  --ink: #1b2a30;
+  --muted: #55666b;
+  --line: #dcd9cb;
+  --blue: #12607f;
+  --sand: #e9e1c8;
+  --buoy: #cf4a2c;
+}
+body {
+  font-size: 17px;
+}
+::selection {
+  color: var(--paper);
+  background: var(--deep);
+}
+
+/* the one warm colour */
+h1 span,
+.wordmark span,
+.footer-name span,
+.gate-title span,
+.gate-mark i {
+  color: var(--buoy);
+}
+.figure-bottom i:not(.dashed) {
+  background: var(--buoy);
+  border-color: var(--buoy);
+}
+.island.is-here .pin {
+  fill: var(--buoy);
+  stroke: var(--buoy);
+}
+.island.is-here .pin-ring {
+  stroke: var(--buoy);
+}
+/* captions: lowercase, quiet, the reading face. Mono stays for filenames. */
+.code-map figcaption,
+.figure-bottom,
+.visual-bar,
+.art-label {
+  font: 500 12.5px/1.4 var(--sans);
+  letter-spacing: 0.01em;
+  text-transform: none;
+  color: var(--muted);
+}
+.code-map figcaption span:last-child,
+.visual-bar span:last-child {
+  font: italic 400 14px/1.3 var(--display);
+  letter-spacing: 0;
+  text-transform: none;
+}
+.eyebrow .coords,
+.coords {
+  font: 500 11px/1.6 var(--sans);
+  letter-spacing: 0.04em;
+  opacity: 0.75;
+}
+
+/* reading sizes */
+.featured-copy > p,
+.card-copy > p,
+.roblox-copy > p {
+  max-width: 34em;
+  font-size: 17px;
+  line-height: 1.6;
+}
+.project .project-lead {
+  max-width: 17em;
+}
+.tags li {
+  font-size: 15px;
+}
+.detail-row p {
+  font-size: 15.5px;
+  line-height: 1.7;
+}
+nav a {
+  font-size: 15px;
+}
+
+/* above the fold: name on the left, a plain contents list hung off the right */
+.intro {
+  padding-top: 40px;
+}
+.intro-bottom {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(300px, 6fr);
+  gap: 28px 72px;
+  align-items: end;
+}
+.intro-bottom > p {
+  margin: 0 0 6px clamp(0px, 5vw, 76px);
+}
+.index {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 2px solid var(--ink);
+}
+.index li {
+  display: grid;
+  grid-template-columns: minmax(0, 11em) minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: baseline;
+  padding: 11px 2px 10px;
+  border-bottom: 1px solid var(--line);
+}
+.index li > a:first-child {
+  font: 600 19px/1.2 var(--display);
+  font-variation-settings: "SOFT" 100;
+  letter-spacing: -0.01em;
+}
+.index li > span {
+  font-size: 15px;
+  color: var(--muted);
+}
+.index-go {
+  font: italic 400 16px/1.2 var(--display);
+  color: var(--blue);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+.index-go::after {
+  content: " \2192";
+}
+.index a:hover {
+  color: var(--buoy);
+}
+
+/* the one thing on the page you can launch gets the one real button */
+.text-link.primary {
+  padding: 13px 20px 13px 22px;
+  border: 0;
+  border-radius: 3px 14px 3px 14px;
+  background: var(--deep);
+  color: var(--paper);
+  font-size: 16px;
+  text-decoration: none;
+}
+.text-link.primary:hover {
+  background: var(--abyss);
+  color: #fff;
+}
+.card-links {
+  align-items: center;
+  gap: 26px;
+}
+
+/* block illustration sits on deep water, not a second blue */
+.roblox-art {
+  background: var(--deep);
+}
+
+@media (max-width: 900px) {
+  .intro-bottom {
+    grid-template-columns: 1fr;
+  }
+  .intro-bottom > p {
+    margin-left: 0;
+  }
+}
+@media (max-width: 520px) {
+  body {
+    font-size: 16px;
+  }
+  .index li {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 2px 14px;
+  }
+  .index li > span {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  .index-go {
+    grid-row: 1 / span 2;
+    grid-column: 2;
+    align-self: center;
+  }
+}
+
 
 @media (prefers-reduced-motion: reduce) {
   html {

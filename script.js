@@ -34,10 +34,10 @@
     if (!figure || !stage) return;
 
     const PLACES = [
-      { id: "codeatlas", name: "CodeAtlas", seed: 7, tint: "#dbe4cd", wide: [262, 208, 80], tall: [190, 160, 78] },
-      { id: "commontime", name: "CommonTime", seed: 23, tint: "#d3dbf6", wide: [548, 112, 56], tall: [430, 262, 56] },
-      { id: "coachzilla", name: "CoachZilla", seed: 41, tint: "#cfdcc6", wide: [668, 318, 62], tall: [170, 388, 62] },
-      { id: "roblox", name: "Untitled Experience", seed: 58, tint: "#c3cff5", wide: [900, 150, 60], tall: [425, 500, 60] },
+      { id: "codeatlas", name: "CodeAtlas", seed: 7, tint: "#e9e1c8", wide: [262, 208, 80], tall: [190, 160, 78] },
+      { id: "commontime", name: "CommonTime", seed: 23, tint: "#efe7d0", wide: [548, 112, 56], tall: [430, 262, 56] },
+      { id: "coachzilla", name: "CoachZilla", seed: 41, tint: "#e3dac0", wide: [668, 318, 62], tall: [170, 388, 62] },
+      { id: "roblox", name: "Untitled Experience", seed: 58, tint: "#ece3c6", wide: [900, 150, 60], tall: [425, 500, 60] },
       { id: "about", name: "About", seed: 90, tint: "#eae3cc", wide: [1000, 338, 42], tall: [185, 612, 44] },
     ];
     const LAYOUTS = {
@@ -158,7 +158,7 @@
           { x: L.sea[0], y: L.sea[1], class: "atlas-sea", "font-size": L.fs + 3 },
           root,
         );
-        sea.textContent = "OPEN SOURCE SEA";
+        sea.textContent = "Open Source Sea";
       }
 
       // Suggested itinerary
@@ -446,8 +446,8 @@
     function build() {
       key = narrow.matches ? "tall" : "wide";
       hint.textContent = narrow.matches
-        ? "TAP A FILE TO TRACE"
-        : "CLICK TO TRACE · DRAG TO REARRANGE";
+        ? "Tap a file to trace it"
+        : "Click to trace · drag to rearrange";
       const [bw, bh] = BOX[key];
       root.setAttribute("viewBox", `0 0 ${bw} ${bh}`);
       root.replaceChildren();
@@ -456,8 +456,8 @@
         "Six backend files from CodeAtlas and the imports between them. Select a file to trace what it imports and what imports it.";
       const defs = svg("defs", {}, root);
       const pattern = svg("pattern", { id: "grid", width: 20, height: 20, patternUnits: "userSpaceOnUse" }, defs);
-      svg("path", { d: "M20 0H0V20", fill: "none", stroke: "#cbd2cc", "stroke-width": 0.6 }, pattern);
-      marker(defs, "arrow", "#2252d4");
+      svg("path", { d: "M20 0H0V20", fill: "none", stroke: "#d3d2c6", "stroke-width": 0.6 }, pattern);
+      marker(defs, "arrow", "#12607f");
       marker(defs, "arrow-quiet", "#a9b3a4");
       svg("rect", { width: bw, height: bh, fill: "url(#grid)" }, root);
       const edgeLayer = svg("g", { class: "graph-edges" }, root);
@@ -610,7 +610,7 @@
     art.removeAttribute("aria-hidden");
     art.replaceChildren();
     art.classList.add("is-live");
-    $(".visual-bar span:last-child", visual).textContent = "AVAILABILITY / TRY IT · SAMPLE DATA";
+    $(".visual-bar span:last-child", visual).textContent = "Try it · sample data";
 
     const head = html("div", { class: "calendar-heading" }, art);
     html("span", {}, head).innerHTML = "When is <strong>everyone free?</strong>";
@@ -704,7 +704,7 @@
 
     visual.classList.add("is-live");
     root.setAttribute("preserveAspectRatio", "xMidYMid slice");
-    $(".visual-bar span:last-child", visual).textContent = "ROUTE / TRY IT · SAMPLE DATA";
+    $(".visual-bar span:last-child", visual).textContent = "Try it · sample data";
 
     const done = svg("path", { d: line.getAttribute("d"), class: "route-done" });
     line.after(done);

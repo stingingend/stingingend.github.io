@@ -14,7 +14,7 @@ Open http://127.0.0.1:3100.
 
 ## Publish
 
-The intended repository is `stingingend/stingingend.github.io`. In **Settings → Pages**, select **GitHub Actions** as the source. Pushing `main` runs the included workflow and publishes only the five public site files, not this README or workflow source. The intended URL is https://stingingend.github.io/.
+The intended repository is `stingingend/stingingend.github.io`. In **Settings → Pages**, select **GitHub Actions** as the source. Pushing `main` runs the included workflow and publishes only the public site files, not this README or workflow source. The intended URL is https://stingingend.github.io/.
 
 ## Personalize
 
@@ -22,7 +22,7 @@ The intended repository is `stingingend/stingingend.github.io`. In **Settings �
 - The name comes from the public GitHub profile. The page links to CodeAtlas and the Roblox experience provided by its owner.
 - The selected work section features CodeAtlas, CommonTime, CoachZilla, and the existing Roblox experience. Project descriptions and tools come from their public source and documentation.
 - The resume section explicitly says coming soon. Add an actual PDF and a download link when ready; no credentials, education, or work history have been invented.
-- CodeAtlas links to its source until a public live demo is deployed. No localhost link is published.
+- The first screen has a plain list of the four projects with a direct link each, next to the name. Colours are one family (paper, sea ink, water, sand) plus a single red used only as a marker; they are set in the last `:root` block of `styles.css`.
 - The main page loads two typefaces from Google Fonts: Fraunces for headings and Instrument Sans for body text. If they fail to load it falls back to Georgia and Segoe UI. There are no other runtime dependencies on the main page.
 - CodeAtlas links to its current `stingingend/CodeAtlas` repository. The diagram shows selected real imports from `backend/app/main.py`; the file nodes link to GitHub source.
 - The Roblox graphic is an illustration, not a game screenshot.
